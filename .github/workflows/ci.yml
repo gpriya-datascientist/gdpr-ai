@@ -1,0 +1,73 @@
+name: EuroSec AI CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt --break-system-packages
+
+      - name: Run unit tests
+        run: pytest tests/unit/ -v --tb=short
+
+      - name: Run integration tests
+        run: pytest tests/integration/ -v --tb=short
+
+  adversarial-gate:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run adversarial test suite
+        env:
+          CLOUD_PROVIDER: "none"
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        run: |
+          python eval/adversarial.py
+          # exits with code 1 if any critical case fails — blocks deploy
+
+      - name: Upload adversarial results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: adversarial-results
+          path: mlruns/
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bandit security scan
+        run: |
+          pip install bandit
+          bandit -r domain/ application/ infrastructure/ interfaces/ -ll
+
+      - name: Check for secrets in code
+        run: |
+          pip install detect-secrets
+          detect-secrets scan --baseline .secrets.baseline

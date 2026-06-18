@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrivaCore Nexus — GDPR Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0a0c0f;
+    --surface:  #111418;
+    --panel:    #161b22;
+    --border:   #21262d;
+    --green:    #39d353;
+    --green-dim:#1a5c2a;
+    --amber:    #e3b341;
+    --red:      #f85149;
+    --blue:     #58a6ff;
+    --text:     #e6edf3;
+    --muted:    #7d8590;
+    --subtle:   #30363d;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+  header { display:flex; align-items:center; justify-content:space-between; padding:0 28px; height:58px; border-bottom:1px solid var(--border); background:var(--surface); flex-shrink:0; }
+  .logo { display:flex; align-items:center; gap:12px; }
+  .logo-icon { width:32px; height:32px; border:2px solid var(--green); border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--green); letter-spacing:-1px; position:relative; overflow:hidden; }
+  .logo-icon::before { content:''; position:absolute; inset:0; background:var(--green); opacity:0.08; }
+  .logo-text { font-size:15px; font-weight:800; letter-spacing:0.04em; color:var(--text); }
+  .logo-sub { font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace; letter-spacing:0.12em; text-transform:uppercase; margin-top:1px; }
+  .header-right { display:flex; align-items:center; gap:20px; }
+  .health-dot { display:flex; align-items:center; gap:7px; font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--muted); letter-spacing:0.06em; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--subtle); transition:background 0.4s; }
+  .dot.online { background:var(--green); box-shadow:0 0 6px var(--green); animation:pulse 2s infinite; }
+  .dot.offline { background:var(--red); }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+  .session-badge { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:4px 8px; letter-spacing:0.06em; }
+  .erase-btn { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--red); background:transparent; border:1px solid var(--red); border-radius:4px; padding:5px 12px; cursor:pointer; letter-spacing:0.06em; transition:all 0.15s; opacity:0.7; }
+  .erase-btn:hover { opacity:1; background:rgba(248,81,73,0.08); }
+  .main { display:flex; flex:1; overflow:hidden; }
+  .chat-area { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+  .messages { flex:1; overflow-y:auto; padding:28px 32px; display:flex; flex-direction:column; gap:24px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+  .messages::-webkit-scrollbar { width:5px; }
+  .messages::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+  .welcome { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:16px; color:var(--muted); text-align:center; padding:60px 40px; }
+  .welcome-icon { font-size:48px; margin-bottom:8px; opacity:0.4; }
+  .welcome h2 { font-size:20px; font-weight:700; color:var(--text); opacity:0.7; }
+  .welcome p { font-size:13px; line-height:1.7; max-width:380px; font-family:'JetBrains Mono',monospace; }
+  .chip-row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+  .chip { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--green); border:1px solid var(--green-dim); background:rgba(57,211,83,0.05); border-radius:4px; padding:5px 10px; cursor:pointer; transition:all 0.15s; text-align:left; }
+  .chip:hover { background:rgba(57,211,83,0.12); border-color:var(--green); }
+  .msg { display:flex; flex-direction:column; gap:6px; animation:fadeUp 0.25s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+  .msg.user { align-items:flex-end; }
+  .msg.ai { align-items:flex-start; }
+  .msg-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; padding:0 4px; }
+  .bubble { max-width:70%; padding:14px 18px; border-radius:10px; font-size:14px; line-height:1.65; word-break:break-word; }
+  .msg.user .bubble { background:rgba(57,211,83,0.1); border:1px solid var(--green-dim); color:var(--text); border-bottom-right-radius:3px; }
+  .msg.ai .bubble { background:var(--panel); border:1px solid var(--border); color:var(--text); border-bottom-left-radius:3px; }
+  .msg.ai.error .bubble { background:rgba(248,81,73,0.08); border-color:rgba(248,81,73,0.3); color:var(--red); }
+  .meta { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; padding:0 4px; }
+  .tag { font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px; border-radius:3px; border:1px solid; letter-spacing:0.05em; }
+  .tag.route-local { color:var(--amber); border-color:rgba(227,179,65,0.35); background:rgba(227,179,65,0.07); }
+  .tag.route-cloud { color:var(--blue); border-color:rgba(88,166,255,0.35); background:rgba(88,166,255,0.07); }
+  .tag.route-sanitized { color:var(--green); border-color:rgba(57,211,83,0.35); background:rgba(57,211,83,0.07); }
+  .tag.pii { color:var(--red); border-color:rgba(248,81,73,0.35); background:rgba(248,81,73,0.07); }
+  .tag.pii-clean { color:var(--muted); border-color:var(--border); background:transparent; }
+  .tag.latency { color:var(--muted); border-color:var(--border); background:transparent; }
+  .thinking .bubble { display:flex; align-items:center; gap:5px; padding:14px 18px; }
+  .dot-flicker span { display:inline-block; width:5px; height:5px; background:var(--green); border-radius:50%; animation:flicker 1.2s infinite; }
+  .dot-flicker span:nth-child(2){animation-delay:0.2s}
+  .dot-flicker span:nth-child(3){animation-delay:0.4s}
+  @keyframes flicker{0%,80%,100%{opacity:0.2;transform:scale(0.8)}40%{opacity:1;transform:scale(1)}}
+  .input-bar { padding:20px 32px 24px; border-top:1px solid var(--border); background:var(--surface); flex-shrink:0; }
+  .input-row { display:flex; gap:10px; align-items:flex-end; background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px 14px; transition:border-color 0.2s; }
+  .input-row:focus-within { border-color:var(--green-dim); }
+  .file-btn { background:transparent; border:none; cursor:pointer; padding:6px; color:var(--muted); border-radius:5px; transition:color 0.15s,background 0.15s; flex-shrink:0; align-self:flex-end; }
+  .file-btn:hover { color:var(--text); background:var(--subtle); }
+  #file-input { display:none; }
+  #query { flex:1; background:transparent; border:none; outline:none; font-family:'Syne',sans-serif; font-size:14px; color:var(--text); resize:none; max-height:140px; line-height:1.6; padding:4px 0; }
+  #query::placeholder { color:var(--muted); }
+  .send-btn { width:36px; height:36px; background:var(--green); border:none; border-radius:7px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s; align-self:flex-end; }
+  .send-btn:hover { background:#4de868; transform:scale(1.04); }
+  .send-btn:active { transform:scale(0.97); }
+  .send-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
+  .send-btn svg { width:15px; height:15px; fill:#0a0c0f; }
+  .hint { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); margin-top:8px; text-align:center; letter-spacing:0.04em; }
+  .side-panel { width:260px; border-left:1px solid var(--border); background:var(--surface); display:flex; flex-direction:column; padding:20px 18px; gap:20px; overflow-y:auto; flex-shrink:0; }
+  .panel-section h3 { font-size:10px; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted); margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+  .stat-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border); font-size:12px; }
+  .stat-row:last-child { border-bottom:none; }
+  .stat-label { font-family:'JetBrains Mono',monospace; color:var(--muted); font-size:10px; letter-spacing:0.04em; }
+  .stat-val { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--text); }
+  .stat-val.green{color:var(--green)} .stat-val.red{color:var(--red)} .stat-val.amber{color:var(--amber)}
+  .doc-item { font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--muted); padding:6px 8px; border:1px solid var(--border); border-radius:5px; margin-bottom:6px; display:flex; align-items:center; gap:6px; word-break:break-all; }
+  .no-docs { font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--subtle); text-align:center; padding:16px 0; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:10px 18px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text); opacity:0; transition:all 0.25s; pointer-events:none; z-index:999; white-space:nowrap; }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.ok{border-color:var(--green-dim);color:var(--green)}
+  .toast.err{border-color:rgba(248,81,73,0.4);color:var(--red)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon">PN</div>
+    <div>
+      <div class="logo-text">PrivaCore Nexus</div>
+      <div class="logo-sub">Sovereign GDPR Intelligence</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="health-dot">
+      <div class="dot" id="health-dot"></div>
+      <span id="health-label">checking...</span>
+    </div>
+    <div class="session-badge" id="session-display">SESSION —</div>
+    <button class="erase-btn" onclick="eraseSession()">⊘ Erase Data</button>
+  </div>
+</header>
+<div class="main">
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">⚿</div>
+        <h2>What can I help you with?</h2>
+        <p>PrivaCore Nexus detects, masks, and shields personal data in real time — keeping sensitive queries sovereign on your machine.</p>
+        <div class="chip-row">
+          <div class="chip" onclick="fillChip(this)">Summarise GDPR Article 17</div>
+          <div class="chip" onclick="fillChip(this)">My name is Max Müller, email max@example.de — what data did I share?</div>
+          <div class="chip" onclick="fillChip(this)">What are the key principles of data minimisation?</div>
+          <div class="chip" onclick="fillChip(this)">My phone is 0151-2345678, am I at risk?</div>
+        </div>
+      </div>
+    </div>
+    <div class="input-bar">
+      <div class="input-row">
+        <button class="file-btn" title="Upload document" onclick="document.getElementById('file-input').click()">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h6.086a1.5 1.5 0 0 1 1.06.44l2.915 2.914A1.5 1.5 0 0 1 14 6.414V12.5A1.5 1.5 0 0 1 12.5 14h-9A1.5 1.5 0 0 1 2 12.5v-9zM3.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V6.5h-2A1.5 1.5 0 0 1 9 5V3H3.5zm6 .5V5a.5.5 0 0 0 .5.5h1.5l-2-2z"/></svg>
+        </button>
+        <input type="file" id="file-input" accept=".pdf,.txt,.docx" onchange="uploadFile(this)">
+        <textarea id="query" rows="1" placeholder="Ask anything — PII is detected and protected automatically…" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendQuery()" title="Send (Enter)">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+      <div class="hint">Enter to send · Shift+Enter for new line · 📎 to upload a document</div>
+    </div>
+  </div>
+  <div class="side-panel">
+    <div class="panel-section">
+      <h3>Session Stats</h3>
+      <div class="stat-row"><span class="stat-label">Messages</span><span class="stat-val" id="stat-messages">0</span></div>
+      <div class="stat-row"><span class="stat-label">PII Masked</span><span class="stat-val red" id="stat-pii">0</span></div>
+      <div class="stat-row"><span class="stat-label">Cloud routes</span><span class="stat-val" id="stat-cloud">0</span></div>
+      <div class="stat-row"><span class="stat-label">Local routes</span><span class="stat-val amber" id="stat-local">0</span></div>
+      <div class="stat-row"><span class="stat-label">Avg latency</span><span class="stat-val" id="stat-latency">—</span></div>
+    </div>
+    <div class="panel-section">
+      <h3>Uploaded Docs</h3>
+      <div id="doc-list"><div class="no-docs">No documents yet</div></div>
+    </div>
+    <div class="panel-section">
+      <h3>Last Audit ID</h3>
+      <div class="stat-row"><span class="stat-label" id="audit-id" style="word-break:break-all;font-size:9px;line-height:1.5;color:var(--muted)">—</span></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const API = 'http://127.0.0.1:8001';
+let sessionId = crypto.randomUUID();
+let stats = { messages:0, pii:0, cloud:0, local:0, latencies:[] };
+let uploadedDocs = [];
+
+document.getElementById('session-display').textContent = 'SESSION ' + sessionId.slice(0,8).toUpperCase();
+checkHealth();
+setInterval(checkHealth, 15000);
+
+async function checkHealth() {
+  try {
+    const r = await fetch(`${API}/api/v1/health`);
+    const d = await r.json();
+    if (d.status === 'ok') {
+      document.getElementById('health-dot').className = 'dot online';
+      document.getElementById('health-label').textContent = 'API online';
+    } else throw new Error();
+  } catch {
+    document.getElementById('health-dot').className = 'dot offline';
+    document.getElementById('health-label').textContent = 'API offline';
+  }
+}
+
+async function sendQuery() {
+  const el = document.getElementById('query');
+  const text = el.value.trim();
+  if (!text) return;
+  hideWelcome();
+  el.value = '';
+  autoResize(el);
+  setLoading(true);
+  appendMsg('user', text);
+  const thinkId = appendThinking();
+  try {
+    const body = { text, session_id: sessionId };
+    if (uploadedDocs.length > 0) body.document_id = uploadedDocs[uploadedDocs.length - 1].id;
+    const r = await fetch(`${API}/api/v1/query`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) { const err = await r.json().catch(()=>({})); throw new Error(err.detail || `HTTP ${r.status}`); }
+    const d = await r.json();
+    removeMsg(thinkId);
+    appendAiMsg(d);
+    updateStats(d);
+  } catch (e) {
+    removeMsg(thinkId);
+    appendMsg('ai', `Error: ${e.message}`, true);
+    toast('Request failed: ' + e.message, 'err');
+  }
+  setLoading(false);
+}
+
+async function uploadFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = '';
+  toast(`Uploading ${file.name}…`);
+  try {
+    const form = new FormData();
+    form.append('file', file);
+    const r = await fetch(`${API}/api/v1/upload`, { method:'POST', body:form });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+    uploadedDocs.push({ id:d.document_id, name:file.name, chunks:d.chunks_created });
+    renderDocs();
+    toast(`✓ ${file.name} uploaded — ${d.chunks_created} chunks`, 'ok');
+  } catch(e) { toast(`Upload failed: ${e.message}`, 'err'); }
+}
+
+async function eraseSession() {
+  if (!confirm(`Erase all session data for ${sessionId.slice(0,8).toUpperCase()}?\nThis cannot be undone.`)) return;
+  try {
+    const r = await fetch(`${API}/api/v1/gdpr/erase/${sessionId}`, { method:'DELETE' });
+    const d = await r.json();
+    toast(`✓ ${d.entries_deleted} entries erased`, 'ok');
+    resetSession();
+  } catch(e) { toast('Erase failed: ' + e.message, 'err'); }
+}
+
+function resetSession() {
+  sessionId = crypto.randomUUID();
+  document.getElementById('session-display').textContent = 'SESSION ' + sessionId.slice(0,8).toUpperCase();
+  stats = { messages:0, pii:0, cloud:0, local:0, latencies:[] };
+  uploadedDocs = [];
+  updateStatsUI();
+  renderDocs();
+  document.getElementById('audit-id').textContent = '—';
+  document.getElementById('messages').innerHTML = '';
+  showWelcome();
+}
+
+let msgCounter = 0;
+function appendMsg(role, text, isError=false) {
+  const id = 'msg-' + (++msgCounter);
+  const div = document.createElement('div');
+  div.className = `msg ${role}${isError?' error':''}`;
+  div.id = id;
+  div.innerHTML = `<div class="msg-label">${role==='user'?'YOU':'PRIVACORE NEXUS'}</div><div class="bubble">${escapeHtml(text)}</div>`;
+  document.getElementById('messages').appendChild(div);
+  scrollBottom();
+  return id;
+}
+
+function appendAiMsg(d) {
+  const id = 'msg-' + (++msgCounter);
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.id = id;
+  const route = d.route_taken || '';
+  const pii = d.pii_masked_count || 0;
+  const latency = d.latency_ms ? (d.latency_ms/1000).toFixed(1)+'s' : '—';
+  let routeClass = 'route-cloud';
+  if (route.includes('local') || d.provider_used==='local') routeClass = 'route-local';
+  if (route.includes('sanitized')) routeClass = 'route-sanitized';
+  const piiTag = pii > 0 ? `<span class="tag pii">⚠ ${pii} PII masked</span>` : `<span class="tag pii-clean">✓ no PII</span>`;
+  div.innerHTML = `<div class="msg-label">PRIVACORE NEXUS</div><div class="bubble">${escapeHtml(d.answer||'(no answer)')}</div><div class="meta"><span class="tag ${routeClass}">⤷ ${route}</span><span class="tag latency">⏱ ${latency}</span>${piiTag}</div>`;
+  document.getElementById('messages').appendChild(div);
+  if (d.audit_id) document.getElementById('audit-id').textContent = d.audit_id;
+  scrollBottom();
+}
+
+function appendThinking() {
+  const id = 'msg-' + (++msgCounter);
+  const div = document.createElement('div');
+  div.className = 'msg ai thinking';
+  div.id = id;
+  div.innerHTML = `<div class="msg-label">PRIVACORE NEXUS</div><div class="bubble"><div class="dot-flicker"><span></span><span></span><span></span></div></div>`;
+  document.getElementById('messages').appendChild(div);
+  scrollBottom();
+  return id;
+}
+
+function removeMsg(id) { const el=document.getElementById(id); if(el)el.remove(); }
+
+function updateStats(d) {
+  stats.messages++;
+  stats.pii += (d.pii_masked_count||0);
+  if (d.latency_ms) stats.latencies.push(d.latency_ms);
+  const r = (d.route_taken||'')+(d.provider_used||'');
+  if (r.includes('local')||d.provider_used==='local') stats.local++; else stats.cloud++;
+  updateStatsUI();
+}
+
+function updateStatsUI() {
+  document.getElementById('stat-messages').textContent = stats.messages;
+  document.getElementById('stat-pii').textContent = stats.pii;
+  document.getElementById('stat-cloud').textContent = stats.cloud;
+  document.getElementById('stat-local').textContent = stats.local;
+  const avg = stats.latencies.length ? (stats.latencies.reduce((a,b)=>a+b,0)/stats.latencies.length/1000).toFixed(1)+'s' : '—';
+  document.getElementById('stat-latency').textContent = avg;
+}
+
+function renderDocs() {
+  const el = document.getElementById('doc-list');
+  if (!uploadedDocs.length) { el.innerHTML='<div class="no-docs">No documents yet</div>'; return; }
+  el.innerHTML = uploadedDocs.map(d=>`<div class="doc-item"><span>📄</span><span>${d.name} <span style="color:var(--muted)">(${d.chunks})</span></span></div>`).join('');
+}
+
+function hideWelcome() { const w=document.getElementById('welcome'); if(w)w.remove(); }
+function showWelcome() {
+  document.getElementById('messages').innerHTML = `<div class="welcome" id="welcome"><div class="welcome-icon">⚿</div><h2>What can I help you with?</h2><p>PrivaCore Nexus detects, masks, and shields personal data in real time.</p><div class="chip-row"><div class="chip" onclick="fillChip(this)">Summarise GDPR Article 17</div><div class="chip" onclick="fillChip(this)">My name is Max Müller, email max@example.de — what data did I share?</div><div class="chip" onclick="fillChip(this)">What are the key principles of data minimisation?</div></div></div>`;
+}
+function fillChip(el) { document.getElementById('query').value=el.textContent; autoResize(document.getElementById('query')); document.getElementById('query').focus(); }
+function setLoading(on) { document.getElementById('send-btn').disabled=on; document.getElementById('query').disabled=on; }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,140)+'px'; }
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendQuery();} }
+function scrollBottom() { const m=document.getElementById('messages'); m.scrollTop=m.scrollHeight; }
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>'); }
+let toastTimer;
+function toast(msg,type='') { const el=document.getElementById('toast'); el.textContent=msg; el.className='toast show'+(type?' '+type:''); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.className='toast',3000); }
+</script>
+</body>
+</html>

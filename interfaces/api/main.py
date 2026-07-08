@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config.settings import get_settings
 from interfaces.api.routes import router
+from interfaces.api.industrial_routes import industrial_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,17 +24,17 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
-    logger.info("EuroSec AI starting — provider=%s", settings.cloud_provider.value)
+    logger.info("PrivaCore Nexus starting — provider=%s", settings.cloud_provider.value)
     yield
-    logger.info("EuroSec AI shutting down")
+    logger.info("PrivaCore Nexus shutting down")
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(
-        title=settings.app_name,
+        title="PrivaCore Nexus",
         version=settings.app_version,
-        description="GDPR-compliant hybrid local-cloud desktop AI assistant",
+        description="GDPR-compliant hybrid local-cloud AI with industrial fusion engine",
         lifespan=lifespan,
     )
     app.add_middleware(
@@ -44,6 +45,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     app.include_router(router, prefix="/api/v1")
+    app.include_router(industrial_router, prefix="/api/v1/industrial")
     return app
 
 

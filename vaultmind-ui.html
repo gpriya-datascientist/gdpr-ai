@@ -1,23 +1,23 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VaultMind — Industrial AI Platform</title>
+<title>VaultMind - Industrial AI Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-:root{--blue-900:#0f2d5e;--blue-800:#1a3f7a;--blue-700:#1e4fa3;--blue-600:#2563eb;--blue-500:#3b82f6;--blue-400:#60a5fa;--blue-100:#dbeafe;--blue-50:#eff6ff;--white:#ffffff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-700:#334155;--gray-900:#0f172a;--red:#ef4444;--red-light:#fef2f2;--green:#10b981;--green-light:#ecfdf5;--amber:#f59e0b;--amber-light:#fffbeb;--shadow-sm:0 1px 3px rgba(0,0,0,0.08);--shadow:0 4px 16px rgba(15,45,94,0.10);--radius:12px;--radius-sm:8px;}
+:root{--blue-900:#0f2d5e;--blue-700:#1e4fa3;--blue-600:#2563eb;--blue-500:#3b82f6;--blue-400:#60a5fa;--blue-100:#dbeafe;--blue-50:#eff6ff;--white:#ffffff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-900:#0f172a;--red:#ef4444;--red-light:#fef2f2;--green:#10b981;--green-light:#ecfdf5;--amber:#f59e0b;--amber-light:#fffbeb;--shadow-sm:0 1px 3px rgba(0,0,0,0.08);--radius:12px;--radius-sm:8px;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--gray-50);color:var(--gray-900);font-family:'Inter',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--shadow-sm);z-index:10;}
 .logo{display:flex;align-items:center;gap:10px;}
-.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--blue-700),var(--blue-500));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:white;box-shadow:0 2px 8px rgba(37,99,235,0.3);}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--blue-700),var(--blue-500));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:white;}
 .logo-name{font-size:16px;font-weight:700;color:var(--blue-900);}
-.logo-tagline{font-size:10px;color:var(--gray-400);font-weight:500;letter-spacing:0.04em;text-transform:uppercase;}
+.logo-tagline{font-size:10px;color:var(--gray-400);font-weight:500;text-transform:uppercase;}
 .mode-tabs{display:flex;background:var(--gray-100);border-radius:10px;padding:3px;gap:2px;}
-.mode-tab{padding:7px 16px;border-radius:8px;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--gray-500);cursor:pointer;transition:all 0.18s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
-.mode-tab:hover{color:var(--gray-700);background:var(--white);}
+.mode-tab{padding:7px 16px;border-radius:8px;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--gray-500);cursor:pointer;transition:all 0.18s;white-space:nowrap;}
+.mode-tab:hover{color:#334155;background:var(--white);}
 .mode-tab.active{background:var(--white);color:var(--blue-700);box-shadow:var(--shadow-sm);}
 .header-right{display:flex;align-items:center;gap:12px;}
 .health-pill{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--gray-100);border-radius:20px;font-size:11px;font-weight:500;color:var(--gray-500);}
@@ -26,92 +26,92 @@ header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0
 .health-dot.offline{background:var(--red);}
 .session-pill{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gray-400);background:var(--gray-100);border-radius:6px;padding:4px 8px;}
 .btn{padding:7px 14px;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px;}
-.btn-primary{background:var(--blue-600);color:white;box-shadow:0 2px 6px rgba(37,99,235,0.25);}
+.btn-primary{background:var(--blue-600);color:white;}
 .btn-primary:hover{background:var(--blue-700);}
 .btn-danger{background:var(--red-light);color:var(--red);border:1px solid #fecaca;}
-.btn-danger:hover{background:#fee2e2;}
 .main{display:flex;flex:1;overflow:hidden;}
-.sidebar{width:280px;background:var(--white);border-right:1px solid var(--gray-200);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
-.sidebar-section{padding:16px;border-bottom:1px solid var(--gray-100);}
-.sidebar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray-400);margin-bottom:10px;}
-.mode-desc{background:var(--blue-50);border:1px solid var(--blue-100);border-radius:var(--radius-sm);padding:12px;}
-.mode-desc-title{font-size:12px;font-weight:700;color:var(--blue-700);margin-bottom:4px;}
-.mode-desc-text{font-size:11px;color:var(--blue-600);line-height:1.6;}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.stat-card{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--radius-sm);padding:10px;}
-.stat-value{font-size:20px;font-weight:700;color:var(--blue-700);font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:3px;}
+.sidebar{width:260px;background:var(--white);border-right:1px solid var(--gray-200);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.sidebar-section{padding:14px;border-bottom:1px solid var(--gray-100);}
+.sidebar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray-400);margin-bottom:8px;}
+.mode-desc{background:var(--blue-50);border:1px solid var(--blue-100);border-radius:var(--radius-sm);padding:10px;}
+.mode-desc-title{font-size:12px;font-weight:700;color:var(--blue-700);margin-bottom:3px;}
+.mode-desc-text{font-size:11px;color:#2563eb;line-height:1.5;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.stat-card{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--radius-sm);padding:8px;}
+.stat-value{font-size:18px;font-weight:700;color:var(--blue-700);font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:2px;}
 .stat-value.red{color:var(--red);}.stat-value.amber{color:var(--amber);}
-.stat-label{font-size:10px;color:var(--gray-400);font-weight:500;text-transform:uppercase;letter-spacing:0.06em;}
-.quick-prompts{display:flex;flex-direction:column;gap:5px;}
-.qp-btn{text-align:left;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:8px 10px;font-size:11px;color:var(--gray-600);cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;line-height:1.4;}
-.qp-btn:hover{background:var(--blue-50);border-color:var(--blue-200);color:var(--blue-700);}
-.doc-item{display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;margin-bottom:5px;font-size:11px;color:var(--gray-600);}
-.no-docs{font-size:11px;color:var(--gray-400);text-align:center;padding:12px 0;font-style:italic;}
+.stat-label{font-size:10px;color:var(--gray-400);font-weight:500;text-transform:uppercase;}
+.quick-prompts{display:flex;flex-direction:column;gap:4px;}
+.qp-btn{text-align:left;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:7px 9px;font-size:11px;color:#475569;cursor:pointer;font-family:'Inter',sans-serif;line-height:1.4;}
+.qp-btn:hover{background:var(--blue-50);border-color:var(--blue-100);color:var(--blue-700);}
+.doc-item{display:flex;align-items:center;gap:6px;padding:6px 7px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:5px;margin-bottom:4px;font-size:11px;color:#475569;}
+.no-docs{font-size:11px;color:var(--gray-400);text-align:center;padding:10px 0;font-style:italic;}
 .audit-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gray-400);word-break:break-all;line-height:1.5;}
 .chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--gray-50);}
-.mode-banner{padding:10px 24px;background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.mode-badge{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+.mode-banner{padding:9px 24px;background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.mode-badge{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
 .mode-badge.gdpr{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
 .mode-badge.industrial{background:#fef3c7;color:#92400e;border:1px solid #fde68a;}
 .mode-badge.control{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;}
-.mode-hint{font-size:12px;color:var(--gray-400);}
-.messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px;scrollbar-width:thin;}
-.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;padding:40px;gap:12px;}
-.welcome-icon-wrap{width:64px;height:64px;background:linear-gradient(135deg,var(--blue-100),var(--blue-50));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:4px;border:1px solid var(--blue-100);}
-.welcome h2{font-size:20px;font-weight:700;color:var(--blue-900);}
-.welcome p{font-size:13px;color:var(--gray-500);max-width:360px;line-height:1.7;}
-.chip-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
-.chip{padding:7px 12px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px;font-size:11px;color:var(--gray-600);cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
+.mode-hint{font-size:11px;color:var(--gray-400);}
+.messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:18px;scrollbar-width:thin;}
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;padding:40px;gap:10px;}
+.welcome-icon-wrap{width:60px;height:60px;background:linear-gradient(135deg,var(--blue-100),var(--blue-50));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;border:1px solid var(--blue-100);}
+.welcome h2{font-size:18px;font-weight:700;color:var(--blue-900);}
+.welcome p{font-size:12px;color:var(--gray-500);max-width:340px;line-height:1.7;}
+.chip-row{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
+.chip{padding:6px 11px;background:var(--white);border:1px solid var(--gray-200);border-radius:7px;font-size:11px;color:#475569;cursor:pointer;font-family:'Inter',sans-serif;}
 .chip:hover{border-color:var(--blue-300);color:var(--blue-700);background:var(--blue-50);}
-.msg{display:flex;flex-direction:column;gap:5px;animation:slideUp 0.2s ease both;}
-@keyframes slideUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.msg{display:flex;flex-direction:column;gap:4px;animation:slideUp 0.2s ease both;}
+@keyframes slideUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 .msg.user{align-items:flex-end;}.msg.ai{align-items:flex-start;}
 .msg-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-400);padding:0 2px;}
-.bubble{max-width:68%;padding:12px 16px;border-radius:12px;font-size:13.5px;line-height:1.65;word-break:break-word;}
-.msg.user .bubble{background:var(--blue-600);color:white;border-bottom-right-radius:4px;}
-.msg.ai .bubble{background:var(--white);border:1px solid var(--gray-200);color:var(--gray-800);border-bottom-left-radius:4px;box-shadow:var(--shadow-sm);}
+.bubble{max-width:68%;padding:11px 15px;border-radius:11px;font-size:13px;line-height:1.65;word-break:break-word;}
+.msg.user .bubble{background:var(--blue-600);color:white;border-bottom-right-radius:3px;}
+.msg.ai .bubble{background:var(--white);border:1px solid var(--gray-200);color:#334155;border-bottom-left-radius:3px;box-shadow:var(--shadow-sm);}
 .msg.ai.error .bubble{background:var(--red-light);border-color:#fecaca;color:var(--red);}
-.control-response{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px;max-width:75%;box-shadow:var(--shadow-sm);}
-.control-header{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue-600);margin-bottom:12px;}
-.param-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:12px;}
+.control-response{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:14px;max-width:58%;box-shadow:var(--shadow-sm);}
+.control-header{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue-600);margin-bottom:10px;}
+.param-row{display:grid;grid-template-columns:140px 48px 18px 58px 48px;align-items:center;padding:5px 0;border-bottom:1px solid var(--gray-100);gap:3px;}
 .param-row:last-child{border-bottom:none;}
-.param-name{color:var(--gray-500);font-weight:500;}
+.param-name{color:#475569;font-weight:500;font-size:11px;}
 .param-before{color:var(--gray-400);font-family:'JetBrains Mono',monospace;font-size:11px;}
-.param-after{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;}
-.param-change{color:var(--blue-600);font-size:11px;font-weight:600;}
-.impact-box{margin-top:12px;padding:10px 12px;background:var(--green-light);border-radius:8px;border:1px solid #a7f3d0;}
-.impact-title{font-size:11px;font-weight:700;color:#065f46;margin-bottom:4px;}
+.param-arrow{color:var(--gray-300);font-size:11px;text-align:center;}
+.param-after{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;}
+.param-change{color:var(--blue-600);font-size:11px;font-weight:600;text-align:right;}
+.impact-box{margin-top:10px;padding:8px 10px;background:var(--green-light);border-radius:6px;border:1px solid #a7f3d0;}
+.impact-title{font-size:10px;font-weight:700;color:#065f46;margin-bottom:2px;text-transform:uppercase;}
 .impact-text{font-size:11px;color:#047857;line-height:1.5;}
-.risk-badge{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:8px;}
+.risk-badge{display:inline-flex;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-top:8px;}
 .risk-low{background:var(--green-light);color:#065f46;border:1px solid #a7f3d0;}
 .risk-medium{background:var(--amber-light);color:#78350f;border:1px solid #fde68a;}
 .risk-high{background:var(--red-light);color:#7f1d1d;border:1px solid #fecaca;}
 .msg-meta{display:flex;flex-wrap:wrap;gap:5px;padding:0 2px;}
-.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;}
 .tag.local{background:var(--amber-light);color:#92400e;border:1px solid #fde68a;}
 .tag.cloud{background:var(--blue-50);color:var(--blue-700);border:1px solid var(--blue-100);}
 .tag.sanitized{background:var(--green-light);color:#065f46;border:1px solid #a7f3d0;}
 .tag.pii{background:var(--red-light);color:#991b1b;border:1px solid #fecaca;}
 .tag.clean{background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-200);}
 .tag.latency{background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-200);}
-.thinking .bubble{display:flex;align-items:center;gap:4px;padding:14px 16px;}
-.dot-pulse span{display:inline-block;width:6px;height:6px;background:var(--blue-300);border-radius:50%;animation:pulse-dot 1.2s infinite;}
+.thinking .bubble{display:flex;align-items:center;gap:4px;padding:13px 15px;}
+.dot-pulse span{display:inline-block;width:6px;height:6px;background:var(--blue-300);border-radius:50%;animation:pd 1.2s infinite;}
 .dot-pulse span:nth-child(2){animation-delay:0.2s;}.dot-pulse span:nth-child(3){animation-delay:0.4s;}
-@keyframes pulse-dot{0%,80%,100%{opacity:0.3;transform:scale(0.8);}40%{opacity:1;transform:scale(1.2);}}
-.input-bar{padding:16px 24px 20px;background:var(--white);border-top:1px solid var(--gray-200);flex-shrink:0;}
-.input-wrap{display:flex;gap:8px;align-items:flex-end;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:10px 12px;transition:border-color 0.2s,box-shadow 0.2s;}
-.input-wrap:focus-within{border-color:var(--blue-400);box-shadow:0 0 0 3px rgba(59,130,246,0.1);background:var(--white);}
-.attach-btn{background:none;border:none;color:var(--gray-400);cursor:pointer;padding:5px;border-radius:6px;transition:all 0.15s;align-self:flex-end;}
-.attach-btn:hover{color:var(--blue-500);background:var(--blue-50);}
-#query{flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--gray-900);resize:none;max-height:120px;line-height:1.6;padding:3px 0;}
+@keyframes pd{0%,80%,100%{opacity:0.3;transform:scale(0.8);}40%{opacity:1;transform:scale(1.2);}}
+.input-bar{padding:14px 24px 18px;background:var(--white);border-top:1px solid var(--gray-200);flex-shrink:0;}
+.input-wrap{display:flex;gap:8px;align-items:flex-end;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:9px 11px;transition:border-color 0.2s;}
+.input-wrap:focus-within{border-color:var(--blue-400);background:var(--white);}
+.attach-btn{background:none;border:none;color:var(--gray-400);cursor:pointer;padding:4px;border-radius:5px;align-self:flex-end;}
+.attach-btn:hover{color:var(--blue-500);}
+#query{flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:13px;color:var(--gray-900);resize:none;max-height:120px;line-height:1.6;padding:3px 0;}
 #query::placeholder{color:var(--gray-400);}
 #file-input{display:none;}
-.send-btn{width:34px;height:34px;background:var(--blue-600);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;align-self:flex-end;flex-shrink:0;}
+.send-btn{width:33px;height:33px;background:var(--blue-600);border:none;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;align-self:flex-end;flex-shrink:0;}
 .send-btn:hover{background:var(--blue-700);}
 .send-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.send-btn svg{width:14px;height:14px;fill:white;}
-.input-hint{font-size:10px;color:var(--gray-400);text-align:center;margin-top:7px;}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--gray-900);color:white;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:500;opacity:0;transition:all 0.22s;pointer-events:none;z-index:999;white-space:nowrap;}
+.send-btn svg{width:13px;height:13px;fill:white;}
+.input-hint{font-size:10px;color:var(--gray-400);text-align:center;margin-top:6px;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px);background:#0f172a;color:white;border-radius:7px;padding:8px 15px;font-size:12px;font-weight:500;opacity:0;transition:all 0.2s;pointer-events:none;z-index:999;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.ok{background:#065f46;}.toast.err{background:#7f1d1d;}
 </style>
@@ -128,8 +128,8 @@ header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0
     <button class="mode-tab" onclick="switchMode('control')" id="tab-control">&#9881;&#65039; Control Plane</button>
   </div>
   <div class="header-right">
-    <div class="health-pill"><div class="health-dot" id="health-dot"></div><span id="health-label">checking...</span></div>
-    <div class="session-pill" id="session-display">--</div>
+    <div class="health-pill"><div class="health-dot" id="hd"></div><span id="hl">checking...</span></div>
+    <div class="session-pill" id="sd">--</div>
     <button class="btn btn-primary" onclick="exportPDF()">&#11015; Export Log</button>
     <button class="btn btn-danger" onclick="eraseSession()">&#8856; Erase</button>
   </div>
@@ -138,247 +138,238 @@ header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0
   <div class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">Current Mode</div>
-      <div class="mode-desc"><div class="mode-desc-title" id="mode-desc-title">GDPR Assistant</div><div class="mode-desc-text" id="mode-desc-text">Ask about GDPR, data rights, privacy law.</div></div>
+      <div class="mode-desc"><div class="mode-desc-title" id="mdt">GDPR Assistant</div><div class="mode-desc-text" id="mdx">Ask about GDPR, data rights, privacy law.</div></div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Session Stats</div>
       <div class="stat-grid">
-        <div class="stat-card"><div class="stat-value" id="stat-msgs">0</div><div class="stat-label">Messages</div></div>
-        <div class="stat-card"><div class="stat-value red" id="stat-pii">0</div><div class="stat-label">PII Masked</div></div>
-        <div class="stat-card"><div class="stat-value" id="stat-cloud">0</div><div class="stat-label">Cloud</div></div>
-        <div class="stat-card"><div class="stat-value amber" id="stat-local">0</div><div class="stat-label">Local</div></div>
+        <div class="stat-card"><div class="stat-value" id="sm">0</div><div class="stat-label">Messages</div></div>
+        <div class="stat-card"><div class="stat-value red" id="sp">0</div><div class="stat-label">PII Masked</div></div>
+        <div class="stat-card"><div class="stat-value" id="sc">0</div><div class="stat-label">Cloud</div></div>
+        <div class="stat-card"><div class="stat-value amber" id="sl">0</div><div class="stat-label">Local</div></div>
       </div>
     </div>
-    <div class="sidebar-section"><div class="sidebar-label">Quick Prompts</div><div class="quick-prompts" id="quick-prompts"></div></div>
-    <div class="sidebar-section"><div class="sidebar-label">Uploaded Documents</div><div id="doc-list"><div class="no-docs">No documents uploaded</div></div></div>
-    <div class="sidebar-section"><div class="sidebar-label">Last Audit ID</div><div class="audit-id" id="audit-id">--</div></div>
+    <div class="sidebar-section"><div class="sidebar-label">Quick Prompts</div><div class="quick-prompts" id="qp"></div></div>
+    <div class="sidebar-section"><div class="sidebar-label">Uploaded Documents</div><div id="dl"><div class="no-docs">No documents uploaded</div></div></div>
+    <div class="sidebar-section"><div class="sidebar-label">Last Audit ID</div><div class="audit-id" id="aid">--</div></div>
   </div>
   <div class="chat-area">
     <div class="mode-banner">
-      <div class="mode-badge gdpr" id="mode-badge">GDPR ASSISTANT</div>
-      <span class="mode-hint" id="mode-hint">Personal data is automatically detected and protected</span>
+      <div class="mode-badge gdpr" id="mb">GDPR ASSISTANT</div>
+      <span class="mode-hint" id="mh">Personal data is automatically detected and protected</span>
     </div>
     <div class="messages" id="messages">
       <div class="welcome" id="welcome">
-        <div class="welcome-icon-wrap" id="welcome-icon">&#128274;</div>
-        <h2 id="welcome-title">GDPR Assistant</h2>
-        <p id="welcome-desc">Ask about data rights, privacy law, or share personal data -- it will be detected and masked automatically.</p>
-        <div class="chip-row" id="chip-row"></div>
+        <div class="welcome-icon-wrap" id="wi">&#128274;</div>
+        <h2 id="wt">GDPR Assistant</h2>
+        <p id="wd">Ask about data rights, privacy law, or share personal data -- it will be detected and masked.</p>
+        <div class="chip-row" id="cr"></div>
       </div>
     </div>
     <div class="input-bar">
       <div class="input-wrap">
-        <button class="attach-btn" onclick="document.getElementById('file-input').click()">
+        <button class="attach-btn" onclick="document.getElementById('fi').click()">
           <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h6.086a1.5 1.5 0 0 1 1.06.44l2.915 2.914A1.5 1.5 0 0 1 14 6.414V12.5A1.5 1.5 0 0 1 12.5 14h-9A1.5 1.5 0 0 1 2 12.5v-9zm1.5-.5a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V6.5h-2A1.5 1.5 0 0 1 9 5V3H3.5z"/></svg>
         </button>
-        <input type="file" id="file-input" accept=".pdf,.txt,.docx,.csv,.json" onchange="uploadFile(this)">
+        <input type="file" id="fi" style="display:none" accept=".pdf,.txt,.docx,.csv,.json" onchange="uploadFile(this)">
         <textarea id="query" rows="1" placeholder="Type your message..." oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
-        <button class="send-btn" id="send-btn" onclick="sendQuery()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+        <button class="send-btn" id="sb" onclick="sendQuery()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
       </div>
-      <div class="input-hint">Enter to send · Shift+Enter new line · attach file</div>
+      <div class="input-hint">Enter to send Â· Shift+Enter new line Â· attach file</div>
     </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 <script>
 const API='http://127.0.0.1:8002';
-let currentMode='gdpr',sessionId=crypto.randomUUID();
-let stats={msgs:0,pii:0,cloud:0,local:0,latencies:[]};
-let uploadedDocs=[],chatLog=[];
-const machineState={left_door_stroke_rate:45.0,right_door_stroke_rate:44.0,hood_stroke_rate:30.0,assembly_speed_ms:2.8,cycle_time_s:240,torque_nm:150,weld_quality:0.95};
-const BASELINE={left_door_stroke_rate:45.0,right_door_stroke_rate:44.0,hood_stroke_rate:30.0,assembly_speed_ms:2.8,cycle_time_s:240,torque_nm:150,weld_quality:0.95};
+let mode='gdpr',sid=crypto.randomUUID();
+let stats={msgs:0,pii:0,cloud:0,local:0,lat:[]};
+let docs=[],log=[];
+const MS={left_door_stroke_rate:45.0,right_door_stroke_rate:44.0,hood_stroke_rate:30.0,assembly_speed_ms:2.8,cycle_time_s:240,torque_nm:150,weld_quality:0.95};
+const BL={left_door_stroke_rate:45.0,right_door_stroke_rate:44.0,hood_stroke_rate:30.0,assembly_speed_ms:2.8,cycle_time_s:240,torque_nm:150,weld_quality:0.95};
 const MODES={
-  gdpr:{label:'GDPR ASSISTANT',badgeClass:'gdpr',hint:'Personal data is automatically detected and protected',descTitle:'GDPR Assistant',descText:'Ask anything about GDPR, data rights, or privacy law. Share personal data -- it will be masked before any cloud call.',welcomeIcon:'&#128274;',welcomeTitle:'GDPR Assistant',welcomeDesc:'Ask about data rights, privacy law, GDPR compliance, or share personal data -- it will be detected and masked automatically.',prompts:['What is GDPR Article 17?','What are my rights as a data subject?','My name is Anna Mueller, email anna@example.de -- what data did I share?','How long can companies keep personal data?','What is the lawful basis for data processing?'],placeholder:'Ask a GDPR question or share personal data to test PII protection...'},
-  industrial:{label:'INDUSTRIAL / METRIS',badgeClass:'industrial',hint:'Analyze METRIS sensor logs, detect anomalies, query production data',descTitle:'Industrial / METRIS',descText:'Upload METRIS CSV logs and query them in natural language. Anomaly detection, production analysis, sensor data.',welcomeIcon:'&#127981;',welcomeTitle:'Industrial / METRIS Mode',welcomeDesc:'Upload your METRIS sensor log CSV and ask questions about production data, anomalies, stroke rates and cycle times.',prompts:['How many anomalies were detected in June?','Which part has the highest defect rate?','When did door right stroke rate spike?','What was the average cycle time last week?','Show me fault events for door left'],placeholder:'Ask about your METRIS logs or upload a CSV to analyze...'},
-  control:{label:'CONTROL PLANE',badgeClass:'control',hint:'Get AI recommendations to optimize stroke rates, cycle time and assembly speed',descTitle:'Control Plane',descText:'Ask VaultMind to calculate parameter adjustments. Get impact analysis before applying any changes to the line.',welcomeIcon:'&#9881;&#65039;',welcomeTitle:'Control Plane',welcomeDesc:'Tell VaultMind what you want to change -- it will calculate new values, estimate impact, and assess risk before you act.',prompts:['Reduce door left stroke rate by 20%','Increase assembly speed to hit 50% target','What happens if I reduce cycle time to 180s?','Optimise hood stroke rate for fewer defects','Show current parameters vs targets'],placeholder:'e.g. Reduce door right stroke rate by 15% or Show current parameters'},
+  gdpr:{label:'GDPR ASSISTANT',bc:'gdpr',hint:'Personal data is automatically detected and protected',dt:'GDPR Assistant',dx:'Ask anything about GDPR, data rights, or privacy law.',wi:'&#128274;',wt:'GDPR Assistant',wd:'Ask about data rights, privacy law, or share personal data -- it will be detected and masked.',prompts:['What is GDPR Article 17?','What are my rights as a data subject?','My name is Anna Mueller, email anna@example.de -- what data did I share?','How long can companies keep personal data?'],ph:'Ask a GDPR question...'},
+  industrial:{label:'INDUSTRIAL / METRIS',bc:'industrial',hint:'Analyze METRIS sensor logs and production data',dt:'Industrial / METRIS',dx:'Upload METRIS CSV logs and query in natural language.',wi:'&#127981;',wt:'Industrial / METRIS',wd:'Upload your METRIS sensor log CSV and ask questions about production, anomalies and stroke rates.',prompts:['How many anomalies in June?','Which part has the highest defect rate?','When did door right stroke rate spike?','Average cycle time last week?'],ph:'Ask about your METRIS logs or upload a CSV...'},
+  control:{label:'CONTROL PLANE',bc:'control',hint:'Optimize stroke rates, cycle time and assembly speed',dt:'Control Plane',dx:'Calculate parameter adjustments with impact analysis.',wi:'&#9881;&#65039;',wt:'Control Plane',wd:'Tell VaultMind what to change -- it calculates new values, impact, and risk.',prompts:['Reduce door left stroke rate by 20%','Increase assembly speed by 30%','Reduce cycle time by 15%','Show current parameters'],ph:'e.g. Reduce door right stroke rate by 15%'},
 };
-document.getElementById('session-display').textContent=sessionId.slice(0,8).toUpperCase();
+document.getElementById('sd').textContent=sid.slice(0,8).toUpperCase();
 checkHealth();setInterval(checkHealth,15000);switchMode('gdpr');
-async function checkHealth(){try{const r=await fetch(API+'/api/v1/health');const d=await r.json();if(d.status==='ok'){document.getElementById('health-dot').className='health-dot online';document.getElementById('health-label').textContent='API online';}else throw new Error();}catch{document.getElementById('health-dot').className='health-dot offline';document.getElementById('health-label').textContent='API offline';}}
-function switchMode(mode){currentMode=mode;const m=MODES[mode];document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+mode).classList.add('active');const badge=document.getElementById('mode-badge');badge.className='mode-badge '+m.badgeClass;badge.textContent=m.label;document.getElementById('mode-hint').textContent=m.hint;document.getElementById('mode-desc-title').textContent=m.descTitle;document.getElementById('mode-desc-text').textContent=m.descText;document.getElementById('quick-prompts').innerHTML=m.prompts.map(p=>'<button class="qp-btn" onclick="fillPrompt(this)">'+p+'</button>').join('');document.getElementById('welcome-icon').innerHTML=m.welcomeIcon;document.getElementById('welcome-title').textContent=m.welcomeTitle;document.getElementById('welcome-desc').textContent=m.welcomeDesc;document.getElementById('chip-row').innerHTML=m.prompts.slice(0,4).map(p=>'<button class="chip" onclick="fillChip(this)">'+p+'</button>').join('');document.getElementById('query').placeholder=m.placeholder;}
-async function sendQuery(){const el=document.getElementById('query');const text=el.value.trim();if(!text)return;hideWelcome();el.value='';autoResize(el);setLoading(true);appendMsg('user',text);const thinkId=appendThinking();chatLog.push({role:'user',text,time:new Date().toLocaleTimeString(),mode:currentMode});
-// Auto-detect control commands in any mode
-const isControlCmd=/(reduce|decrease|lower|increase|raise|boost)\s+[\w\s]+\s+by\s+\d+%|show current param/i.test(text);
-try{if(currentMode==='control'||isControlCmd){await handleControlPlane(text,thinkId);}else{await handleChat(text,thinkId);}}catch(e){removeMsg(thinkId);appendMsg('ai','Error: '+e.message,true);toast('Failed: '+e.message,'err');}setLoading(false);}
-async function handleChat(text,thinkId){const body={text,session_id:sessionId};if(uploadedDocs.length)body.document_id=uploadedDocs[uploadedDocs.length-1].id;const r=await fetch(API+'/api/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.detail||'HTTP '+r.status);}const d=await r.json();removeMsg(thinkId);appendAiMsg(d);updateStats(d);chatLog.push({role:'assistant',text:d.answer,time:new Date().toLocaleTimeString(),mode:currentMode,route:d.route_taken,pii:d.pii_masked_count,latency:d.latency_ms,auditId:d.audit_id});}
-async function handleControlPlane(text,thinkId){const result=parseControlCommand(text);removeMsg(thinkId);if(result){appendControlResponse(result);chatLog.push({role:'assistant',text:JSON.stringify(result),time:new Date().toLocaleTimeString(),mode:'control',isControl:true});const body={text:'You are a BMW assembly line engineer. The operator just made this change: '+text+'. New value is now: '+JSON.stringify(result.params[0])+'. Give one practical safety check and one benefit of this change. Be brief and direct. Do not recalculate values.',session_id:sessionId};try{const r=await fetch(API+'/api/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(r.ok){const d=await r.json();if(d.answer){const el=appendMsg('ai','');el&&document.querySelector('#'+el+' .bubble')||null;const b=document.getElementById(el);if(b){b.querySelector('.bubble').innerHTML='\uD83D\uDCA1 <strong>AI Insight:</strong> '+escHtml(d.answer);}}}}catch{}}else{await handleChat(text,appendThinking());}}
-function parseControlCommand(text){const lower=text.toLowerCase();const rm=lower.match(/(reduce|decrease|lower)\s+([\w\s]+?)\s+by\s+(\d+)%/);const im=lower.match(/(increase|raise|boost)\s+([\w\s]+?)\s+by\s+(\d+)%/);const pm={'door left stroke':'left_door_stroke_rate','left door stroke':'left_door_stroke_rate','door right stroke':'right_door_stroke_rate','right door stroke':'right_door_stroke_rate','hood stroke':'hood_stroke_rate','assembly speed':'assembly_speed_ms','cycle time':'cycle_time_s','torque':'torque_nm'};let param=null,pct=0,isRed=false;if(rm){const pt=rm[2].trim();pct=parseFloat(rm[3]);isRed=true;for(const[k,v]of Object.entries(pm)){if(pt.includes(k)){param=v;break;}}}else if(im){const pt=im[2].trim();pct=parseFloat(im[3]);isRed=false;for(const[k,v]of Object.entries(pm)){if(pt.includes(k)){param=v;break;}}}if(!param){if(lower.includes('current')||lower.includes('status')||lower.includes('parameter')){return{type:'status',params:Object.entries(machineState).map(([k,v])=>({name:k.replace(/_/g,' '),before:v,after:v,change:'0%'})),impact:'Current machine parameters shown. No changes applied.',risk:'low'};}return null;}const before=machineState[param];const mult=isRed?(1-pct/100):(1+pct/100);const after=Math.round(before*mult*100)/100;machineState[param]=after;let risk=pct>30?'high':pct>15?'medium':'low';let impact='';if(param.includes('stroke_rate')){impact='Estimated '+(pct*0.4).toFixed(1)+'% cycle time improvement. Parts/hour: ~'+Math.round(20*(1+pct/200))+' (was 20). Monitor weld quality.';}else if(param==='assembly_speed_ms'){impact='Throughput +'+pct+'%. Recalibrate robot arm timing. Target 4.2 m/s for 50% speed goal.';}else if(param==='cycle_time_s'){impact='Reduced cycle time increases output. Verify conveyor belt tension before applying.';}return{type:'adjustment',params:[{name:param.replace(/_/g,' '),before,after,change:(isRed?'-':'+')+pct+'%'}],impact,risk};}
-async function uploadFile(input){const file=input.files[0];if(!file)return;input.value='';toast('Uploading '+file.name+' ('+( file.size/1024/1024).toFixed(1)+'MB)... please wait');try{const form=new FormData();form.append('file',file);const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),300000);const r=await fetch(API+'/api/v1/upload',{method:'POST',body:form,signal:ctrl.signal});clearTimeout(t);if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();uploadedDocs.push({id:d.document_id,name:file.name,chunks:d.chunks_created});renderDocs();toast(file.name+' -- '+d.chunks_created+' chunks ready','ok');}catch(e){toast('Upload failed: '+e.message,'err');}}
-async function eraseSession(){if(!confirm('Erase all data for session '+sessionId.slice(0,8).toUpperCase()+'?'))return;try{const r=await fetch(API+'/api/v1/gdpr/erase/'+sessionId,{method:'DELETE'});const d=await r.json();toast(d.entries_deleted+' entries erased','ok');resetSession();}catch(e){toast('Erase failed: '+e.message,'err');}}
-function resetSession(){sessionId=crypto.randomUUID();document.getElementById('session-display').textContent=sessionId.slice(0,8).toUpperCase();stats={msgs:0,pii:0,cloud:0,local:0,latencies:[]};uploadedDocs=[];chatLog=[];updateStatsUI();renderDocs();document.getElementById('audit-id').textContent='--';document.getElementById('messages').innerHTML='';showWelcome();}
+
+async function checkHealth(){try{const r=await fetch(API+'/api/v1/health');const d=await r.json();if(d.status==='ok'){document.getElementById('hd').className='health-dot online';document.getElementById('hl').textContent='API online';}else throw 0;}catch{document.getElementById('hd').className='health-dot offline';document.getElementById('hl').textContent='API offline';}}
+
+function switchMode(m){mode=m;const c=MODES[m];document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+m).classList.add('active');const b=document.getElementById('mb');b.className='mode-badge '+c.bc;b.textContent=c.label;document.getElementById('mh').textContent=c.hint;document.getElementById('mdt').textContent=c.dt;document.getElementById('mdx').textContent=c.dx;document.getElementById('qp').innerHTML=c.prompts.map(p=>'<button class="qp-btn" onclick="fp(this)">'+p+'</button>').join('');document.getElementById('wi').innerHTML=c.wi;document.getElementById('wt').textContent=c.wt;document.getElementById('wd').textContent=c.wd;document.getElementById('cr').innerHTML=c.prompts.slice(0,4).map(p=>'<button class="chip" onclick="fc(this)">'+p+'</button>').join('');document.getElementById('query').placeholder=c.ph;}
+
+async function sendQuery(){const el=document.getElementById('query');const text=el.value.trim();if(!text)return;hw();el.value='';autoResize(el);setLoad(true);aMsg('user',text);const tid=aThink();log.push({role:'user',text,time:new Date().toLocaleTimeString(),mode});const isCtrl=/(reduce|decrease|lower|increase|raise|boost)\s+[\w\s]+\s+by\s+\d+%|show current param|current param|show param/i.test(text)||mode==='control';try{if(mode==='control'||isCtrl){await hCtrl(text,tid);}else{await hChat(text,tid);}}catch(e){rMsg(tid);aMsg('ai','Error: '+e.message,true);toast('Failed: '+e.message,'err');}setLoad(false);}
+
+async function hChat(text,tid){const body={text,session_id:sid};if(docs.length&&mode!=='control')body.document_id=docs[docs.length-1].id;const r=await fetch(API+'/api/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.detail||'HTTP '+r.status);}const d=await r.json();rMsg(tid);aAiMsg(d);updStats(d);log.push({role:'assistant',text:d.answer,time:new Date().toLocaleTimeString(),mode,route:d.route_taken,pii:d.pii_masked_count,latency:d.latency_ms,auditId:d.audit_id});}
+
+async function hCtrl(text,tid){const res=parseCmd(text);rMsg(tid);if(res){aCtrlResp(res);log.push({role:'assistant',text:JSON.stringify(res),time:new Date().toLocaleTimeString(),mode:'control',isControl:true});const body={text:'You are a senior BMW assembly line engineer. The operator changed: '+text+'. From '+res.params[0].before+' to '+res.params[0].after+' ('+res.params[0].change+'). Write 2-3 sentences as a professional engineering narrative about operational impact and what to monitor. No bullets, no formulas.',session_id:sid};try{const r=await fetch(API+'/api/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(r.ok){const d=await r.json();if(d.answer){const id=aMsg('ai','');const b=document.getElementById(id);if(b)b.querySelector('.bubble').innerHTML='\uD83D\uDCA1 <strong>AI Insight:</strong> '+esc(d.answer);}}}catch{}}else{await hChat(text,aThink());}}
+
+function parseCmd(text){const lower=text.toLowerCase();const rm=lower.match(/(reduce|decrease|lower)\s+([\w\s]+?)\s+by\s+(\d+)%/);const im=lower.match(/(increase|raise|boost)\s+([\w\s]+?)\s+by\s+(\d+)%/);const pm={'door left stroke':'left_door_stroke_rate','left door stroke':'left_door_stroke_rate','door right stroke':'right_door_stroke_rate','right door stroke':'right_door_stroke_rate','hood stroke':'hood_stroke_rate','assembly speed':'assembly_speed_ms','cycle time':'cycle_time_s','torque':'torque_nm'};let param=null,pct=0,isRed=false;if(rm){const pt=rm[2].trim();pct=parseFloat(rm[3]);isRed=true;for(const[k,v]of Object.entries(pm)){if(pt.includes(k)){param=v;break;}}}else if(im){const pt=im[2].trim();pct=parseFloat(im[3]);isRed=false;for(const[k,v]of Object.entries(pm)){if(pt.includes(k)){param=v;break;}}}if(!param){if(lower.includes('current')||lower.includes('status')||lower.includes('parameter')){return{type:'status',params:Object.entries(MS).map(([k,v])=>({name:k.replace(/_/g,' '),before:v,after:v,change:'0%'})),impact:'Current machine parameters shown. No changes applied.',risk:'low'};}return null;}const before=MS[param];const mult=isRed?(1-pct/100):(1+pct/100);const after=Math.round(before*mult*100)/100;MS[param]=after;const risk=pct>30?'high':pct>15?'medium':'low';let impact='';if(param.includes('stroke_rate')){impact='Estimated '+(pct*0.4).toFixed(1)+'% cycle time improvement. Parts/hour ~'+Math.round(20*(1+pct/200))+' (was 20). Monitor weld quality.';}else if(param==='assembly_speed_ms'){impact='Throughput +'+pct+'%. Recalibrate robot arm timing. Target 4.2m/s for +50%.';}else if(param==='cycle_time_s'){impact='Reduced cycle time increases output. Verify conveyor belt tension.';}return{type:'adjustment',params:[{name:param.replace(/_/g,' '),before,after,change:(isRed?'-':'+')+pct+'%'}],impact,risk};}
+
+async function uploadFile(input){const file=input.files[0];if(!file)return;input.value='';toast('Uploading '+file.name+'...');try{const form=new FormData();form.append('file',file);const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),300000);const r=await fetch(API+'/api/v1/upload',{method:'POST',body:form,signal:ctrl.signal});clearTimeout(t);if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();docs.push({id:d.document_id,name:file.name,chunks:d.chunks_created});rdocs();toast(file.name+' ready ('+d.chunks_created+' chunks)','ok');}catch(e){toast('Upload failed: '+e.message,'err');}}
+
+async function eraseSession(){if(!confirm('Erase session '+sid.slice(0,8).toUpperCase()+'?'))return;try{const r=await fetch(API+'/api/v1/gdpr/erase/'+sid,{method:'DELETE'});const d=await r.json();toast(d.entries_deleted+' entries erased','ok');resetSess();}catch(e){toast('Erase failed','err');}}
+
+function resetSess(){sid=crypto.randomUUID();document.getElementById('sd').textContent=sid.slice(0,8).toUpperCase();stats={msgs:0,pii:0,cloud:0,local:0,lat:[]};docs=[];log=[];updUI();rdocs();document.getElementById('aid').textContent='--';document.getElementById('messages').innerHTML='';sw();}
+
 function exportPDF(){
-  if(chatLog.length===0){toast('No session data to export','err');return;}
+  if(log.length===0){toast('No session data to export','err');return;}
   const{jsPDF}=window.jspdf;
   const doc=new jsPDF({unit:'mm',format:'a4'});
-  const W=210,M=14,lw=W-M*2;
-  let y=0;
-  // HEADER
-  doc.setFillColor(30,79,163);doc.rect(0,0,W,32,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(20);doc.setFont('helvetica','bold');
-  doc.text('VaultMind',M,13);
-  doc.setFontSize(9);doc.setFont('helvetica','normal');
-  doc.text('Industrial AI Platform -- Session Log',M,20);
-  doc.setFontSize(8);
-  doc.text('Session: '+sessionId.slice(0,8).toUpperCase()+'   Date: '+new Date().toLocaleDateString()+'   Mode: '+currentMode.toUpperCase(),M,27);
-  y=40;
-  // SUMMARY BOX
-  doc.setFillColor(239,246,255);doc.setDrawColor(191,219,254);
-  doc.roundedRect(M,y,lw,18,2,2,'FD');
-  doc.setTextColor(30,79,163);doc.setFontSize(8);doc.setFont('helvetica','bold');
-  doc.text('SESSION SUMMARY',M+3,y+5);
-  doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);
-  doc.text('Total Events: '+chatLog.length+'   PII Masked: '+stats.pii+'   Cloud: '+stats.cloud+'   Local: '+stats.local+'   GDPR Compliant: YES',M+3,y+10);
-  const avgLat=stats.latencies.length?(stats.latencies.reduce((a,b)=>a+b,0)/stats.latencies.length/1000).toFixed(1)+'s':'--';
-  doc.text('Avg Latency: '+avgLat+'   Documents: '+uploadedDocs.length+'   Files: '+(uploadedDocs.map(d=>d.name).join(', ')||'none'),M+3,y+15);
-  y+=24;
-  // BASELINE TABLE (control only)
-  const ctrlEvt=chatLog.filter(e=>e.isControl);
+  const W=210,M=14,lw=W-M*2;let y=0;
+  function hl(yy){doc.setDrawColor(180,180,180);doc.setLineWidth(0.3);doc.line(M,yy,W-M,yy);}
+  function bx(x,yy,w,h){doc.setDrawColor(180,180,180);doc.setLineWidth(0.3);doc.rect(x,yy,w,h,'S');}
+
+  // HEADER BOX
+  doc.setDrawColor(30,79,163);doc.setLineWidth(0.5);
+  doc.setFillColor(30,79,163);doc.rect(M,y+4,lw,8,'F');
+  doc.rect(M,y+4,lw,20,'S');
+  doc.setTextColor(255,255,255);doc.setFontSize(12);doc.setFont('helvetica','bold');
+  doc.text('VAULTMIND -- CONTROL PLANE SESSION LOG',W/2,y+10,{align:'center'});
+  doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Session: '+sid.slice(0,8).toUpperCase()+'  |  Date: '+new Date().toLocaleDateString()+'  |  Mode: '+mode.toUpperCase(),W/2,y+18,{align:'center'});
+  doc.setTextColor(55,65,81);y+=28;
+
+  // SUMMARY
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(100,100,100);
+  const avgLat=stats.lat.length?(stats.lat.reduce((a,b)=>a+b,0)/stats.lat.length/1000).toFixed(1)+'s':'--';
+  doc.text('Events: '+log.length+'  |  PII Masked: '+stats.pii+'  |  Cloud: '+stats.cloud+'  |  Local: '+stats.local+'  |  Avg Latency: '+avgLat+'  |  GDPR: YES',M,y);
+  y+=8;
+
+  // BASELINE
+  const ctrlEvt=log.filter(e=>e.isControl);
   if(ctrlEvt.length>0){
-    doc.setFillColor(236,253,245);doc.setDrawColor(167,243,208);
-    doc.roundedRect(M,y,lw,4,'FD');
-    doc.setTextColor(6,95,70);doc.setFontSize(8);doc.setFont('helvetica','bold');
-    doc.text('BASELINE PARAMETERS',M+3,y+3);y+=6;
-    const bH=['Parameter','Baseline','Unit'];const bC=[72,30,30];
-    doc.setFillColor(220,252,231);doc.rect(M,y,lw,5,'F');
-    doc.setTextColor(6,95,70);doc.setFontSize(7.5);doc.setFont('helvetica','bold');
-    let bx=M+2;bH.forEach((h,i)=>{doc.text(h,bx,y+3.5);bx+=bC[i];});y+=5;
-    const bR=[['Left Door Stroke Rate','45.0','strokes/min'],['Right Door Stroke Rate','44.0','strokes/min'],['Hood Stroke Rate','30.0','strokes/min'],['Assembly Speed','2.8','m/s'],['Cycle Time','240','seconds'],['Torque','150','Nm'],['Weld Quality','0.95','score']];
+    doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);
+    doc.text('BASELINE PARAMETERS (Session Start)',M,y);y+=4;
+    const bC=[80,30];const bW=bC[0]+bC[1];
+    doc.setFillColor(235,245,255);doc.rect(M,y,bW,7,'F');bx(M,y,bW,7);
+    doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);
+    doc.text('Parameter',M+2,y+4.5);doc.text('Value',M+bC[0]+2,y+4.5);y+=7;
+    const bR=[['Left Door Stroke Rate','45.0'],['Right Door Stroke Rate','44.0'],['Hood Stroke Rate','30.0'],['Assembly Speed','2.8 m/s'],['Cycle Time','240s'],['Torque','150 Nm'],['Weld Quality','0.95']];
     doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);
-    bR.forEach((row,ri)=>{doc.setFillColor(ri%2===0?249:255,ri%2===0?250:255,ri%2===0?251:255);doc.rect(M,y,lw,5,'F');doc.setDrawColor(229,231,235);doc.rect(M,y,lw,5,'D');let bx=M+2;row.forEach((cell,i)=>{doc.text(cell,bx,y+3.5);bx+=bC[i];});y+=5;});y+=6;
+    bR.forEach((row,ri)=>{
+      if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);
+      doc.rect(M,y,bW,6,'F');bx(M,y,bW,6);
+      doc.setFontSize(7.5);doc.text(row[0],M+2,y+4);doc.text(row[1],M+bC[0]+2,y+4);y+=6;
+    });y+=6;
   }
-  // CHANGES LOG HEADER
-  doc.setFillColor(239,246,255);doc.setDrawColor(191,219,254);
-  doc.roundedRect(M,y,lw,4,'FD');
-  doc.setTextColor(30,79,163);doc.setFontSize(8);doc.setFont('helvetica','bold');
-  doc.text(currentMode==='control'?'PARAMETER CHANGES LOG':'SESSION ACTIVITY LOG',M+3,y+3);y+=6;
-  const isCtrl=currentMode==='control';
-  const cols=isCtrl?[18,40,18,18,16,14,58]:[16,20,18,12,96];
-  const hdrs=isCtrl?['Time','Parameter','Before','After','Change','Risk','AI Suggestion']:['Time','Mode','Route','PII','Message'];
-  doc.setFillColor(30,79,163);doc.rect(M,y,lw,6,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(7);doc.setFont('helvetica','bold');
-  let hx=M+2;hdrs.forEach((h,i)=>{doc.text(h,hx,y+4);hx+=cols[i];});y+=6;
-  let ri=0;
-  chatLog.forEach(entry=>{
-    if(y>272){doc.addPage();y=15;}
-    const isUser=entry.role==='user';
-    if(isCtrl){
-      if(!entry.isControl)return;
-      let parsed={};try{parsed=JSON.parse(entry.text);}catch{}
-      (parsed.params||[]).forEach((p,pi)=>{
-        if(y>272){doc.addPage();y=15;}
-        doc.setFillColor(ri%2===0?248:255,ri%2===0?250:255,ri%2===0?252:255);
-        doc.rect(M,y,lw,7,'F');doc.setDrawColor(229,231,235);doc.rect(M,y,lw,7,'D');
-        doc.setTextColor(55,65,81);doc.setFontSize(7);doc.setFont('helvetica','normal');
+
+  // CHANGES LOG
+  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);
+  doc.text('PARAMETER CHANGES LOG',M,y);y+=4;
+  const cC=[20,44,16,16,16,14,56];const cW=cC.reduce((a,b)=>a+b,0);
+  const cH=['Time','Parameter','Before','After','Change','Risk','AI Suggestion'];
+  doc.setFillColor(30,79,163);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);
+  doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
+  let hx=M+2;cH.forEach((h,i)=>{doc.text(h,hx,y+4.5);hx+=cC[i];});y+=7;
+
+  if(ctrlEvt.length===0){
+    doc.setFillColor(252,252,252);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);
+    doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.setFontSize(8);
+    doc.text('No parameter changes recorded.',M+2,y+4.5);y+=7;
+  }else{
+    let ri=0;
+    ctrlEvt.forEach(entry=>{
+      let p={};try{p=JSON.parse(entry.text);}catch{}
+      (p.params||[]).forEach((param,pi)=>{
+        if(y>265){doc.addPage();y=15;}
+        if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);
+        doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);
+        doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);
         let cx=M+2;
-        doc.text(pi===0?(entry.time||''):'',cx,y+4.5);cx+=cols[0];
-        doc.text(String(p.name||'').slice(0,22),cx,y+4.5);cx+=cols[1];
-        doc.text(String(p.before||''),cx,y+4.5);cx+=cols[2];
-        doc.text(String(p.after||''),cx,y+4.5);cx+=cols[3];
-        const chg=String(p.change||'');
-        doc.setTextColor(...(chg.startsWith('-')?[239,68,68]:[16,185,129]));
-        doc.text(chg,cx,y+4.5);cx+=cols[4];
-        const rk=parsed.risk||'low';
-        doc.setTextColor(...(rk==='high'?[239,68,68]:rk==='medium'?[245,158,11]:[16,185,129]));
-        doc.setFont('helvetica','bold');doc.text(rk.toUpperCase(),cx,y+4.5);cx+=cols[5];
+        doc.text(pi===0?(entry.time||''):'',cx,y+4.5);cx+=cC[0];
+        doc.text(String(param.name||'').slice(0,26),cx,y+4.5);cx+=cC[1];
+        doc.text(String(param.before||''),cx,y+4.5);cx+=cC[2];
+        doc.text(String(param.after||''),cx,y+4.5);cx+=cC[3];
+        const chg=String(param.change||'');
+        doc.setTextColor(...(chg.startsWith('-')?[200,40,40]:[16,140,70]));
+        doc.setFont('helvetica','bold');doc.text(chg,cx,y+4.5);cx+=cC[4];
+        const rk=(p.risk||'low').toUpperCase();
+        doc.setTextColor(...(rk==='HIGH'?[200,40,40]:rk==='MEDIUM'?[190,110,0]:[16,140,70]));
+        doc.text(rk,cx,y+4.5);cx+=cC[5];
         doc.setTextColor(55,65,81);doc.setFont('helvetica','normal');
-        doc.text((parsed.impact||'').slice(0,70),cx,y+4.5);
+        doc.text((p.impact||'').slice(0,52),cx,y+4.5);
         y+=7;ri++;
       });
-    }else{
-      const lh=isUser?6:10;
-      doc.setFillColor(ri%2===0?248:255,ri%2===0?250:255,ri%2===0?252:255);
-      doc.rect(M,y,lw,lh,'F');doc.setDrawColor(229,231,235);doc.rect(M,y,lw,lh,'D');
-      doc.setFontSize(7);doc.setFont('helvetica','normal');
-      let cx=M+2;
-      doc.setTextColor(55,65,81);doc.text(entry.time||'',cx,y+4);cx+=cols[0];
-      doc.setTextColor(isUser?30:100,isUser?79:100,isUser?163:100);
-      doc.text((entry.mode||'').toUpperCase().slice(0,10),cx,y+4);cx+=cols[1];
-      doc.setTextColor(55,65,81);
-      doc.text(isUser?'YOU':(entry.route||'').slice(0,14),cx,y+4);cx+=cols[2];
-      doc.text(isUser?'':String(entry.pii||0),cx,y+4);cx+=cols[3];
-      const lines=doc.splitTextToSize((entry.text||'').slice(0,100),cols[4]-2);
-      lines.slice(0,2).forEach((l,li)=>doc.text(l,cx,y+4+li*3.5));
-      y+=lh;ri++;
-      if(!isUser&&entry.auditId){
-        doc.setFillColor(249,250,251);doc.rect(M,y,lw,4,'F');
-        doc.setTextColor(148,163,184);doc.setFontSize(6.5);
-        doc.text('Latency: '+(entry.latency?(entry.latency/1000).toFixed(1)+'s':'--')+' | Audit: '+(entry.auditId||'--'),M+2,y+2.8);
-        y+=4;
-      }
-    }
-  });
-  y+=6;
-  // FINAL STATE TABLE
-  if(ctrlEvt.length>0){
-    if(y>220){doc.addPage();y=15;}
-    doc.setFillColor(236,253,245);doc.setDrawColor(167,243,208);
-    doc.roundedRect(M,y,lw,4,'FD');
-    doc.setTextColor(6,95,70);doc.setFontSize(8);doc.setFont('helvetica','bold');
-    doc.text('FINAL STATE vs BASELINE',M+3,y+3);y+=6;
-    const fC=[60,28,28,20,20];const fH=['Parameter','Baseline','Final','Change','Status'];
-    doc.setFillColor(6,95,70);doc.rect(M,y,lw,5,'F');
-    doc.setTextColor(255,255,255);doc.setFontSize(7);doc.setFont('helvetica','bold');
-    let fx=M+2;fH.forEach((h,i)=>{doc.text(h,fx,y+3.5);fx+=fC[i];});y+=5;
-    Object.entries(machineState).forEach(([k,v],ri2)=>{
-      const bv=BASELINE[k]||v;const cp=bv!==0?Math.round((v-bv)/bv*100):0;const ch=cp!==0;
-      doc.setFillColor(ri2%2===0?249:255,ri2%2===0?250:255,ri2%2===0?251:255);
-      doc.rect(M,y,lw,5,'F');doc.setDrawColor(229,231,235);doc.rect(M,y,lw,5,'D');
-      doc.setFont('helvetica','normal');
-      let fx=M+2;
-      doc.setTextColor(55,65,81);doc.text(k.replace(/_/g,' '),fx,y+3.5);fx+=fC[0];
-      doc.text(String(bv),fx,y+3.5);fx+=fC[1];
-      doc.setTextColor(ch?[16,185,129]:[55,65,81]);doc.text(String(v),fx,y+3.5);fx+=fC[2];
-      doc.setTextColor(cp<0?[239,68,68]:cp>0?[16,185,129]:[148,163,184]);
-      doc.text((cp>=0?'+':'')+cp+'%',fx,y+3.5);fx+=fC[3];
-      doc.setTextColor(ch?[16,185,129]:[148,163,184]);doc.text(ch?'MODIFIED':'--',fx,y+3.5);
-      doc.setTextColor(55,65,81);y+=5;
-    });y+=8;
-    if(y>260){doc.addPage();y=15;}
-    doc.setFillColor(239,246,255);doc.setDrawColor(191,219,254);
-    doc.roundedRect(M,y,lw,22,2,2,'FD');
-    doc.setTextColor(30,79,163);doc.setFontSize(8);doc.setFont('helvetica','bold');
-    doc.text('OVERALL IMPACT SUMMARY',M+3,y+5);
-    doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);
-    const sg=((4.2-machineState.assembly_speed_ms)/4.2*100).toFixed(0);
-    const sa=(((machineState.assembly_speed_ms-2.8)/2.8)*100).toFixed(0);
-    doc.text('Assembly speed: +'+sa+'% achieved (target +50%, remaining '+sg+'%)',M+3,y+10);
-    doc.text('Cycle time: '+machineState.cycle_time_s+'s (baseline 240s, target <160s)',M+3,y+15);
-    doc.text('Parameters modified: '+Object.entries(machineState).filter(([k,v])=>v!==BASELINE[k]).length+' of '+Object.keys(machineState).length,M+3,y+20);
-    y+=28;
+    });
   }
+  y+=6;
+
+  // FINAL STATE
+  if(y>210){doc.addPage();y=15;}
+  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);
+  doc.text('FINAL STATE vs BASELINE',M,y);y+=4;
+  const fC=[58,24,24,18,18];const fW=fC.reduce((a,b)=>a+b,0);
+  const fH=['Parameter','Baseline','Final','Change','Status'];
+  doc.setFillColor(30,79,163);doc.rect(M,y,fW,7,'F');bx(M,y,fW,7);
+  doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
+  let fx=M+2;fH.forEach((h,i)=>{doc.text(h,fx,y+4.5);fx+=fC[i];});y+=7;
+  Object.entries(MS).forEach(([k,v],ri)=>{
+    const bv=BL[k]||v;const cp=bv!==0?Math.round((v-bv)/bv*100):0;const ch=cp!==0;
+    if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);
+    doc.rect(M,y,fW,6,'F');bx(M,y,fW,6);
+    doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);doc.setFontSize(7);
+    let fx=M+2;
+    doc.text(k.replace(/_/g,' '),fx,y+4);fx+=fC[0];
+    doc.text(String(bv),fx,y+4);fx+=fC[1];
+    doc.setTextColor(ch?[16,140,70]:[55,65,81]);doc.text(String(v),fx,y+4);fx+=fC[2];
+    doc.setTextColor(cp<0?[200,40,40]:cp>0?[16,140,70]:[150,150,150]);
+    doc.text((cp>=0?'+':'')+cp+'%',fx,y+4);fx+=fC[3];
+    doc.setTextColor(ch?[16,140,70]:[150,150,150]);
+    doc.setFont('helvetica','bold');doc.text(ch?'MODIFIED':'--',fx,y+4);
+    doc.setTextColor(55,65,81);y+=6;
+  });y+=8;
+
+  // IMPACT SUMMARY
+  if(y>245){doc.addPage();y=15;}
+  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);
+  doc.text('OVERALL IMPACT SUMMARY',M,y);y+=4;
+  bx(M,y,lw,28);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);
+  const sa=(((MS.assembly_speed_ms-2.8)/2.8)*100).toFixed(0);
+  const sg=((4.2-MS.assembly_speed_ms)/4.2*100).toFixed(0);
+  const hasH=ctrlEvt.some(e=>{try{return JSON.parse(e.text).risk==='high';}catch{return false;}});
+  const hasM=ctrlEvt.some(e=>{try{return JSON.parse(e.text).risk==='medium';}catch{return false;}});
+  const rl=hasH?'HIGH':hasM?'MEDIUM':'LOW';
+  doc.text('Speed improvement vs 50% target:  +'+sa+'% achieved, '+sg+'% remaining',M+4,y+7);
+  doc.text('Estimated parts/hour improvement:  ~'+Math.round(20*(1+Number(sa)/100))+' (was 20)',M+4,y+13);
+  doc.text('Total risk level:                  '+rl,M+4,y+19);
+  doc.text('GDPR Compliant:                    YES',M+4,y+25);
+
   // FOOTER
   const pc=doc.getNumberOfPages();
   for(let i=1;i<=pc;i++){
-    doc.setPage(i);
-    doc.setFillColor(248,250,252);doc.rect(0,285,W,12,'F');
-    doc.setDrawColor(229,231,235);doc.line(0,285,W,285);
-    doc.setFontSize(7);doc.setTextColor(148,163,184);
-    doc.text('VaultMind -- GDPR-compliant Industrial AI Platform',M,291);
-    doc.text('Page '+i+' of '+pc+' | '+new Date().toLocaleString(),W-M-55,291);
+    doc.setPage(i);hl(284);
+    doc.setFontSize(7);doc.setTextColor(150,150,150);doc.setFont('helvetica','normal');
+    doc.text('VaultMind -- GDPR-compliant Industrial AI Platform',M,289);
+    doc.text('Page '+i+' of '+pc+' | '+new Date().toLocaleString(),W-M,289,{align:'right'});
   }
-  doc.save('VaultMind-Log-'+sessionId.slice(0,8)+'-'+new Date().toISOString().slice(0,10)+'.pdf');
+  doc.save('VaultMind-Log-'+sid.slice(0,8)+'-'+new Date().toISOString().slice(0,10)+'.pdf');
   toast('Log exported as PDF','ok');
 }
-let msgCounter=0;
-function appendMsg(role,text,isError=false){const id='msg-'+(++msgCounter);const div=document.createElement('div');div.className='msg '+role+(isError?' error':'');div.id=id;div.innerHTML='<div class="msg-label">'+(role==='user'?'You':'VaultMind')+'</div><div class="bubble">'+escHtml(text)+'</div>';document.getElementById('messages').appendChild(div);scrollBottom();return id;}
-function appendAiMsg(d){const id='msg-'+(++msgCounter);const div=document.createElement('div');div.className='msg ai';div.id=id;const route=d.route_taken||'';const pii=d.pii_masked_count||0;const lat=d.latency_ms?(d.latency_ms/1000).toFixed(1)+'s':'--';let rc='cloud';if(route.includes('local')||d.provider_used==='local')rc='local';if(route.includes('sanitized'))rc='sanitized';const piiTag=pii>0?'<span class="tag pii">'+pii+' PII masked</span>':'<span class="tag clean">no PII</span>';div.innerHTML='<div class="msg-label">VaultMind</div><div class="bubble">'+escHtml(d.answer||'')+'</div><div class="msg-meta"><span class="tag '+rc+'">'+( route||d.provider_used)+'</span><span class="tag latency">'+lat+'</span>'+piiTag+'</div>';document.getElementById('messages').appendChild(div);if(d.audit_id)document.getElementById('audit-id').textContent=d.audit_id;scrollBottom();}
-function appendControlResponse(result){const id='msg-'+(++msgCounter);const div=document.createElement('div');div.className='msg ai';div.id=id;const rows=result.params.map(p=>'<div class="param-row"><span class="param-name">'+p.name+'</span><span class="param-before">'+p.before+'</span><span style="color:var(--gray-300);margin:0 6px">to</span><span class="param-after">'+p.after+'</span><span class="param-change">'+p.change+'</span></div>').join('');const rc=result.risk==='high'?'risk-high':result.risk==='medium'?'risk-medium':'risk-low';div.innerHTML='<div class="msg-label">VaultMind -- Control Plane</div><div class="control-response"><div class="control-header">Parameter Adjustment</div>'+rows+(result.impact?'<div class="impact-box"><div class="impact-title">Estimated Impact</div><div class="impact-text">'+result.impact+'</div></div>':'')+'<div class="risk-badge '+rc+'">Risk: '+result.risk.toUpperCase()+'</div></div>';document.getElementById('messages').appendChild(div);scrollBottom();}
-function appendThinking(){const id='msg-'+(++msgCounter);const div=document.createElement('div');div.className='msg ai thinking';div.id=id;div.innerHTML='<div class="msg-label">VaultMind</div><div class="bubble"><div class="dot-pulse"><span></span><span></span><span></span></div></div>';document.getElementById('messages').appendChild(div);scrollBottom();return id;}
-function removeMsg(id){const e=document.getElementById(id);if(e)e.remove();}
-function updateStats(d){stats.msgs++;stats.pii+=(d.pii_masked_count||0);if(d.latency_ms)stats.latencies.push(d.latency_ms);const r=(d.route_taken||'')+(d.provider_used||'');if(r.includes('local')||d.provider_used==='local')stats.local++;else stats.cloud++;updateStatsUI();}
-function updateStatsUI(){document.getElementById('stat-msgs').textContent=stats.msgs;document.getElementById('stat-pii').textContent=stats.pii;document.getElementById('stat-cloud').textContent=stats.cloud;document.getElementById('stat-local').textContent=stats.local;}
-function renderDocs(){const el=document.getElementById('doc-list');if(!uploadedDocs.length){el.innerHTML='<div class="no-docs">No documents uploaded</div>';return;}el.innerHTML=uploadedDocs.map(d=>'<div class="doc-item">Doc: <span>'+d.name+' ('+d.chunks+' chunks)</span></div>').join('');}
-function hideWelcome(){const w=document.getElementById('welcome');if(w)w.remove();}
-function showWelcome(){document.getElementById('messages').innerHTML='';switchMode(currentMode);}
-function fillPrompt(el){document.getElementById('query').value=el.textContent;autoResize(document.getElementById('query'));document.getElementById('query').focus();}
-function fillChip(el){document.getElementById('query').value=el.textContent;autoResize(document.getElementById('query'));document.getElementById('query').focus();}
-function setLoading(on){document.getElementById('send-btn').disabled=on;document.getElementById('query').disabled=on;}
+
+let mc=0;
+function aMsg(role,text,err=false){const id='m'+(++mc);const d=document.createElement('div');d.className='msg '+role+(err?' error':'');d.id=id;d.innerHTML='<div class="msg-label">'+(role==='user'?'You':'VaultMind')+'</div><div class="bubble">'+esc(text)+'</div>';document.getElementById('messages').appendChild(d);sb();return id;}
+function aAiMsg(d){const id='m'+(++mc);const el=document.createElement('div');el.className='msg ai';el.id=id;const route=d.route_taken||'';const pii=d.pii_masked_count||0;const lat=d.latency_ms?(d.latency_ms/1000).toFixed(1)+'s':'--';let rc='cloud';if(route.includes('local')||d.provider_used==='local')rc='local';if(route.includes('sanitized'))rc='sanitized';const pt=pii>0?'<span class="tag pii">'+pii+' PII</span>':'<span class="tag clean">no PII</span>';el.innerHTML='<div class="msg-label">VaultMind</div><div class="bubble">'+esc(d.answer||'')+'</div><div class="msg-meta"><span class="tag '+rc+'">'+(route||d.provider_used)+'</span><span class="tag latency">'+lat+'</span>'+pt+'</div>';document.getElementById('messages').appendChild(el);if(d.audit_id)document.getElementById('aid').textContent=d.audit_id;sb();}
+function aCtrlResp(res){const id='m'+(++mc);const d=document.createElement('div');d.className='msg ai';d.id=id;const rows=res.params.map(p=>'<div class="param-row"><span class="param-name">'+p.name+'</span><span class="param-before">'+p.before+'</span><span class="param-arrow">&#8594;</span><span class="param-after">'+p.after+'</span><span class="param-change">'+p.change+'</span></div>').join('');const rc=res.risk==='high'?'risk-high':res.risk==='medium'?'risk-medium':'risk-low';d.innerHTML='<div class="msg-label">VaultMind -- Control Plane</div><div class="control-response"><div class="control-header">&#9881; Parameter Adjustment</div>'+rows+(res.impact?'<div class="impact-box"><div class="impact-title">Estimated Impact</div><div class="impact-text">'+res.impact+'</div></div>':'')+'<div class="risk-badge '+rc+'">Risk: '+res.risk.toUpperCase()+'</div></div>';document.getElementById('messages').appendChild(d);sb();}
+function aThink(){const id='m'+(++mc);const d=document.createElement('div');d.className='msg ai thinking';d.id=id;d.innerHTML='<div class="msg-label">VaultMind</div><div class="bubble"><div class="dot-pulse"><span></span><span></span><span></span></div></div>';document.getElementById('messages').appendChild(d);sb();return id;}
+function rMsg(id){const e=document.getElementById(id);if(e)e.remove();}
+function updStats(d){stats.msgs++;stats.pii+=(d.pii_masked_count||0);if(d.latency_ms)stats.lat.push(d.latency_ms);const r=(d.route_taken||'')+(d.provider_used||'');if(r.includes('local')||d.provider_used==='local')stats.local++;else stats.cloud++;updUI();}
+function updUI(){document.getElementById('sm').textContent=stats.msgs;document.getElementById('sp').textContent=stats.pii;document.getElementById('sc').textContent=stats.cloud;document.getElementById('sl').textContent=stats.local;}
+function rdocs(){const el=document.getElementById('dl');if(!docs.length){el.innerHTML='<div class="no-docs">No documents uploaded</div>';return;}el.innerHTML=docs.map(d=>'<div class="doc-item">&#128196; '+d.name+' ('+d.chunks+')</div>').join('');}
+function hw(){const w=document.getElementById('welcome');if(w)w.remove();}
+function sw(){document.getElementById('messages').innerHTML='';switchMode(mode);}
+function fp(el){document.getElementById('query').value=el.textContent;autoResize(document.getElementById('query'));document.getElementById('query').focus();}
+function fc(el){document.getElementById('query').value=el.textContent;autoResize(document.getElementById('query'));document.getElementById('query').focus();}
+function setLoad(on){document.getElementById('sb').disabled=on;document.getElementById('query').disabled=on;}
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendQuery();}}
-function scrollBottom(){const m=document.getElementById('messages');m.scrollTop=m.scrollHeight;}
-function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
-let toastTimer;
-function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show'+(type?' '+type:'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.className='toast',3000);}
+function sb(){const m=document.getElementById('messages');m.scrollTop=m.scrollHeight;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+let tt;function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show'+(type?' '+type:'');clearTimeout(tt);tt=setTimeout(()=>el.className='toast',3000);}
+function exportPDF(){if(log.length===0){toast('No session data to export','err');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});const W=210,M=14,lw=W-M*2;let y=0;function hl(yy){doc.setDrawColor(180,180,180);doc.setLineWidth(0.3);doc.line(M,yy,W-M,yy);}function bx(x,yy,w,h){doc.setDrawColor(180,180,180);doc.setLineWidth(0.3);doc.rect(x,yy,w,h,'S');}doc.setFillColor(30,79,163);doc.rect(M,y+4,lw,8,'F');doc.rect(M,y+4,lw,20,'S');doc.setTextColor(255,255,255);doc.setFontSize(12);doc.setFont('helvetica','bold');doc.text('VAULTMIND -- CONTROL PLANE SESSION LOG',W/2,y+10,{align:'center'});doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Session: '+sid.slice(0,8).toUpperCase()+'  |  Date: '+new Date().toLocaleDateString()+'  |  Mode: '+mode.toUpperCase(),W/2,y+18,{align:'center'});doc.setTextColor(55,65,81);y+=28;const avgLat=stats.lat.length?(stats.lat.reduce((a,b)=>a+b,0)/stats.lat.length/1000).toFixed(1)+'s':'--';doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(100,100,100);doc.text('Events: '+log.length+'  |  PII Masked: '+stats.pii+'  |  Cloud: '+stats.cloud+'  |  Local: '+stats.local+'  |  Avg Latency: '+avgLat+'  |  GDPR: YES',M,y);y+=8;const ctrlEvt=log.filter(e=>e.isControl);if(ctrlEvt.length>0){doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('BASELINE PARAMETERS (Session Start)',M,y);y+=4;const bC=[80,30];const bW=bC[0]+bC[1];doc.setFillColor(235,245,255);doc.rect(M,y,bW,7,'F');bx(M,y,bW,7);doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('Parameter',M+2,y+4.5);doc.text('Value',M+bC[0]+2,y+4.5);y+=7;const bR=[['Left Door Stroke Rate','45.0'],['Right Door Stroke Rate','44.0'],['Hood Stroke Rate','30.0'],['Assembly Speed','2.8 m/s'],['Cycle Time','240s'],['Torque','150 Nm'],['Weld Quality','0.95']];doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);bR.forEach((row,ri)=>{if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);doc.rect(M,y,bW,6,'F');bx(M,y,bW,6);doc.setFontSize(7.5);doc.text(row[0],M+2,y+4);doc.text(row[1],M+bC[0]+2,y+4);y+=6;});y+=6;}doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('PARAMETER CHANGES LOG',M,y);y+=4;const cC=[20,44,16,16,16,14,56];const cW=cC.reduce((a,b)=>a+b,0);const cH=['Time','Parameter','Before','After','Change','Risk','AI Suggestion'];doc.setFillColor(30,79,163);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);let hx=M+2;cH.forEach((h,i)=>{doc.text(h,hx,y+4.5);hx+=cC[i];});y+=7;if(ctrlEvt.length===0){doc.setFillColor(252,252,252);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.setFontSize(8);doc.text('No parameter changes recorded.',M+2,y+4.5);y+=7;}else{let ri=0;ctrlEvt.forEach(entry=>{let p={};try{p=JSON.parse(entry.text);}catch{}(p.params||[]).forEach((param,pi)=>{if(y>265){doc.addPage();y=15;}if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);let cx=M+2;doc.text(pi===0?(entry.time||''):'',cx,y+4.5);cx+=cC[0];doc.text(String(param.name||'').slice(0,26),cx,y+4.5);cx+=cC[1];doc.text(String(param.before||''),cx,y+4.5);cx+=cC[2];doc.text(String(param.after||''),cx,y+4.5);cx+=cC[3];const chg=String(param.change||'');doc.setTextColor(...(chg.startsWith('-')?[200,40,40]:[16,140,70]));doc.setFont('helvetica','bold');doc.text(chg,cx,y+4.5);cx+=cC[4];const rk=(p.risk||'low').toUpperCase();doc.setTextColor(...(rk==='HIGH'?[200,40,40]:rk==='MEDIUM'?[190,110,0]:[16,140,70]));doc.text(rk,cx,y+4.5);cx+=cC[5];doc.setTextColor(55,65,81);doc.setFont('helvetica','normal');doc.text((p.impact||'').slice(0,52),cx,y+4.5);y+=7;ri++;});});}y+=6;if(y>210){doc.addPage();y=15;}doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('FINAL STATE vs BASELINE',M,y);y+=4;const fC=[58,24,24,18,18];const fW=fC.reduce((a,b)=>a+b,0);const fH=['Parameter','Baseline','Final','Change','Status'];doc.setFillColor(30,79,163);doc.rect(M,y,fW,7,'F');bx(M,y,fW,7);doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);let fx=M+2;fH.forEach((h,i)=>{doc.text(h,fx,y+4.5);fx+=fC[i];});y+=7;Object.entries(MS).forEach(([k,v],ri)=>{const bv=BL[k]||v;const cp=bv!==0?Math.round((v-bv)/bv*100):0;const ch=cp!==0;if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);doc.rect(M,y,fW,6,'F');bx(M,y,fW,6);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);doc.setFontSize(7);let fx=M+2;doc.text(k.replace(/_/g,' '),fx,y+4);fx+=fC[0];doc.text(String(bv),fx,y+4);fx+=fC[1];doc.setTextColor(ch?[16,140,70]:[55,65,81]);doc.text(String(v),fx,y+4);fx+=fC[2];doc.setTextColor(cp<0?[200,40,40]:cp>0?[16,140,70]:[150,150,150]);doc.text((cp>=0?'+':'')+cp+'%',fx,y+4);fx+=fC[3];doc.setTextColor(ch?[16,140,70]:[150,150,150]);doc.setFont('helvetica','bold');doc.text(ch?'MODIFIED':'--',fx,y+4);doc.setTextColor(55,65,81);y+=6;});y+=8;if(y>245){doc.addPage();y=15;}doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('OVERALL IMPACT SUMMARY',M,y);y+=4;bx(M,y,lw,28);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);const sa=(((MS.assembly_speed_ms-2.8)/2.8)*100).toFixed(0);const sg=((4.2-MS.assembly_speed_ms)/4.2*100).toFixed(0);const hasH=ctrlEvt.some(e=>{try{return JSON.parse(e.text).risk==='high';}catch{return false;}});const hasM=ctrlEvt.some(e=>{try{return JSON.parse(e.text).risk==='medium';}catch{return false;}});const rl=hasH?'HIGH':hasM?'MEDIUM':'LOW';doc.text('Speed improvement vs 50% target:  +'+sa+'% achieved, '+sg+'% remaining',M+4,y+7);doc.text('Estimated parts/hour improvement:  ~'+Math.round(20*(1+Number(sa)/100))+' (was 20)',M+4,y+13);doc.text('Total risk level:                  '+rl,M+4,y+19);doc.text('GDPR Compliant:                    YES',M+4,y+25);const pc=doc.getNumberOfPages();for(let i=1;i<=pc;i++){doc.setPage(i);hl(284);doc.setFontSize(7);doc.setTextColor(150,150,150);doc.setFont('helvetica','normal');doc.text('VaultMind -- GDPR-compliant Industrial AI Platform',M,289);doc.text('Page '+i+' of '+pc+' | '+new Date().toLocaleString(),W-M,289,{align:'right'});}doc.save('VaultMind-Log-'+sid.slice(0,8)+'-'+new Date().toISOString().slice(0,10)+'.pdf');toast('Log exported as PDF','ok');}
 </script>
 </body>
 </html>
+

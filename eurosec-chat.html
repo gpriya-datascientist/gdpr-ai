@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PrivaCore Nexus — GDPR Intelligence</title>
+<title>VaultMind — GDPR Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -103,9 +103,9 @@
 <body>
 <header>
   <div class="logo">
-    <div class="logo-icon">PN</div>
+    <div class="logo-icon">VM</div>
     <div>
-      <div class="logo-text">PrivaCore Nexus</div>
+      <div class="logo-text">VaultMind</div>
       <div class="logo-sub">Sovereign GDPR Intelligence</div>
     </div>
   </div>
@@ -168,7 +168,7 @@
 </div>
 <div class="toast" id="toast"></div>
 <script>
-const API = 'http://127.0.0.1:8001';
+const API = 'http://127.0.0.1:8002';
 let sessionId = crypto.randomUUID();
 let stats = { messages:0, pii:0, cloud:0, local:0, latencies:[] };
 let uploadedDocs = [];
@@ -267,7 +267,7 @@ function appendMsg(role, text, isError=false) {
   const div = document.createElement('div');
   div.className = `msg ${role}${isError?' error':''}`;
   div.id = id;
-  div.innerHTML = `<div class="msg-label">${role==='user'?'YOU':'PRIVACORE NEXUS'}</div><div class="bubble">${escapeHtml(text)}</div>`;
+  div.innerHTML = `<div class="msg-label">${role==='user'?'YOU':'VAULTMIND'}</div><div class="bubble">${escapeHtml(text)}</div>`;
   document.getElementById('messages').appendChild(div);
   scrollBottom();
   return id;
@@ -285,7 +285,7 @@ function appendAiMsg(d) {
   if (route.includes('local') || d.provider_used==='local') routeClass = 'route-local';
   if (route.includes('sanitized')) routeClass = 'route-sanitized';
   const piiTag = pii > 0 ? `<span class="tag pii">⚠ ${pii} PII masked</span>` : `<span class="tag pii-clean">✓ no PII</span>`;
-  div.innerHTML = `<div class="msg-label">PRIVACORE NEXUS</div><div class="bubble">${escapeHtml(d.answer||'(no answer)')}</div><div class="meta"><span class="tag ${routeClass}">⤷ ${route}</span><span class="tag latency">⏱ ${latency}</span>${piiTag}</div>`;
+  div.innerHTML = `<div class="msg-label">VAULTMIND</div><div class="bubble">${escapeHtml(d.answer||'(no answer)')}</div><div class="meta"><span class="tag ${routeClass}">⤷ ${route}</span><span class="tag latency">⏱ ${latency}</span>${piiTag}</div>`;
   document.getElementById('messages').appendChild(div);
   if (d.audit_id) document.getElementById('audit-id').textContent = d.audit_id;
   scrollBottom();

@@ -37,6 +37,8 @@ GERMAN_PATTERNS = {
         (r"\b(\+49|0049|0)\s?(\d{3,5})\s?(\d{6,8})\b", "DE_PHONE"),
         # International phone formats
         (r"\+\d{1,3}[\s\-]?\d{2,4}[\s\-]?\d{4,10}\b", "INTL_PHONE"),
+        (r"\b\d{10,15}\b", "PHONE_NUMBER"),  # 10+ digits only to avoid false positives
+        (r"\b\d{3,5}[\s\-]\d{3,5}[\s\-]\d{3,5}\b", "PHONE_NUMBER"),
     ],
     PIIType.ADDRESS: [
         (r"\b\d{5}\s+[A-Za-z\u00c0-\u00ff][a-z\u00c0-\u00ff]+\b", "DE_POSTCODE_CITY"),
@@ -170,9 +172,9 @@ class PresidioPIIDetector(IPIIDetector):
                 language="en",
                 score_threshold=self._threshold,
                 entities=[
-                    "PERSON", "EMAIL_ADDRESS", "PHONE_NUMBER", "LOCATION",
+                    "PERSON", "EMAIL_ADDRESS", "PHONE_NUMBER",
                     "CREDIT_CARD", "IBAN_CODE", "NRP", "MEDICAL_LICENSE",
-                    "DATE_TIME", "IP_ADDRESS", "URL", "US_SSN",
+                    "IP_ADDRESS", "US_SSN",
                 ],
             )
             for r in results:

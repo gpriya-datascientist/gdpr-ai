@@ -32,9 +32,9 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(
-        title="PrivaCore Nexus",
+        title="VaultMind",
         version=settings.app_version,
-        description="GDPR-compliant hybrid local-cloud AI with industrial fusion engine",
+        description="GDPR-compliant industrial AI with privacy-first architecture",
         lifespan=lifespan,
     )
     app.add_middleware(
@@ -53,4 +53,4 @@ app = create_app()
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("interfaces.api.main:app", host="127.0.0.1", port=8001, reload=False)
+    uvicorn.run("interfaces.api.main:app", host="127.0.0.1", port=8002, reload=False)

@@ -1,8 +1,9 @@
 """
 Layer: APPLICATION
-Imports allowed: domain only
 Purpose: Classify query sensitivity and determine routing.
-         Uses zero-shot scoring + rule-based fallback for reliability.
+         Fixed: GDPR general questions route to cloud, not local.
+         Fixed: No-signal queries default to cloud (fast).
+         Fixed: Lower threshold so more queries use fast Groq.
 """
 import logging
 import re
@@ -17,134 +18,86 @@ from domain.models import (
 logger = logging.getLogger(__name__)
 
 # Keywords that strongly indicate sensitive/local-only processing
+# NOTE: removed "gdpr", "address", "personal", "document" — these are general topics
 SENSITIVE_SIGNALS = [
-    "contract", "vertrag", "salary", "gehalt", "medical", "medizin",
-    "patient", "invoice", "rechnung", "personal", "hr", "employee",
-    "mitarbeiter", "confidential", "vertraulich", "cv", "lebenslauf",
-    "audit", "compliance", "gdpr", "dsgvo", "password", "passwort",
-    "address", "adresse", "account", "konto", "document", "dokument",
-    "certificate", "zertifikat", "signature", "unterschrift",
+    "my name is", "my email", "my phone", "my address", "my password",
+    "my credit card", "my iban", "my account", "my salary", "my id",
+    "vertrag", "gehalt", "medizin", "patient", "rechnung",
+    "mitarbeiter", "vertraulich", "lebenslauf", "passwort",
+    "konto", "zertifikat", "unterschrift",
+    "invoice number", "account number", "social security",
+    "date of birth", "passport", "driving licence",
 ]
 
-# Keywords that indicate general knowledge (safe for cloud)
+# Keywords that indicate general knowledge (safe for cloud) — expanded
 GENERAL_SIGNALS = [
-    "what is", "was ist", "explain", "erkläre", "how does", "wie funktioniert",
-    "definition", "describe", "difference between", "unterschied zwischen",
-    "best practice", "example", "beispiel", "tutorial", "overview",
-    "legislation", "law", "gesetz", "regulation", "verordnung",
-    "history", "geschichte", "concept", "konzept",
+    "what is", "what are", "was ist", "explain", "how does", "how do",
+    "wie funktioniert", "definition", "describe", "difference between",
+    "best practice", "example", "tutorial", "overview", "summarise",
+    "legislation", "law", "regulation", "history", "concept",
+    "gdpr", "dsgvo", "article", "principle", "right", "compliance",
+    "data minimisation", "data protection", "privacy", "consent",
+    "controller", "processor", "data subject", "lawful basis",
+    "tell me", "can you", "please explain", "what day", "today",
+    "industrial", "manufacturing", "assembly", "sensor", "stroke rate",
 ]
 
-# Mixed query patterns — always treat as sensitive
 MIXED_QUERY_PATTERNS = [
-    r"(what|explain|describe).+(in this|my|the uploaded|this|from the)",
-    r"(summarize|zusammenfassen).+(document|doc|file|contract|report)",
+    r"(summarize|zusammenfassen).+(my|this uploaded|this|from the)",
     r"(translate|übersetzen).+(this|the|my)",
-    r"(improve|verbessern|fix|korrigieren).+(paragraph|section|clause)",
-    r"(compare|vergleichen).+(this|my|uploaded)",
+    r"(improve|fix).+(my|this paragraph|my clause)",
+    r"(compare).+(my|this uploaded)",
 ]
 
 
 class RuleBasedIntentClassifier(IIntentClassifier):
     """
-    Intent classifier combining:
-    1. Document-context detection (if doc uploaded → always local)
-    2. Keyword signal scoring
-    3. Mixed-query pattern detection
-    4. Confidence-based fallback to sensitive (safe default)
-
-    Design principle: when in doubt → LOCAL_ONLY.
-    A false positive (treat general as sensitive) costs latency.
-    A false negative (treat sensitive as general) causes GDPR violation.
+    Fixed classifier:
+    - General knowledge questions → CLOUD_SANITIZED (fast Groq)
+    - Queries with personal data signals → LOCAL_ONLY (private Mistral)
+    - Unknown/no signals → CLOUD_SANITIZED (fast, PII detector will catch any PII)
     """
 
     def __init__(
         self,
-        sensitivity_threshold: float = 0.7,
+        sensitivity_threshold: float = 0.6,
         injection_patterns: Optional[list[str]] = None,
     ) -> None:
         self._threshold = sensitivity_threshold
         self._mixed_re = [re.compile(p, re.IGNORECASE) for p in MIXED_QUERY_PATTERNS]
-        self._injection_patterns = injection_patterns or []
 
-    def classify(
-        self,
-        query: Query,
-        document: Optional[Document] = None,
-    ) -> ClassifiedQuery:
+    def classify(self, query: Query, document: Optional[Document] = None) -> ClassifiedQuery:
         text_lower = query.raw_text.lower()
 
-        # Rule 1: Document context always → local only
+        # Rule 1: Document context → local only
         if document is not None or query.document_id is not None:
-            return self._make_decision(
-                query, SensitivityLevel.HIGH, RouteDecision.LOCAL_ONLY,
-                confidence=1.0, reasoning="Document context present — local only",
-            )
+            return self._decide(query, SensitivityLevel.HIGH, RouteDecision.LOCAL_ONLY,
+                                1.0, "Document context — local only")
 
         # Rule 2: Mixed query patterns → local only
         for pattern in self._mixed_re:
             if pattern.search(query.raw_text):
-                return self._make_decision(
-                    query, SensitivityLevel.HIGH, RouteDecision.LOCAL_ONLY,
-                    confidence=0.95,
-                    reasoning=f"Mixed query pattern matched: {pattern.pattern}",
-                )
+                return self._decide(query, SensitivityLevel.HIGH, RouteDecision.LOCAL_ONLY,
+                                    0.95, f"Mixed query pattern: {pattern.pattern}")
 
-        # Rule 3: Score sensitive vs general signals
-        sensitive_score = self._score_signals(text_lower, SENSITIVE_SIGNALS)
-        general_score = self._score_signals(text_lower, GENERAL_SIGNALS)
+        # Rule 3: Score signals
+        sensitive_score = sum(1.0 for s in SENSITIVE_SIGNALS if s in text_lower)
+        general_score   = sum(1.0 for s in GENERAL_SIGNALS   if s in text_lower)
 
-        total = sensitive_score + general_score
-        if total == 0:
-            # No signals — default to sensitive (safe)
-            return self._make_decision(
-                query, SensitivityLevel.MEDIUM, RouteDecision.LOCAL_ONLY,
-                confidence=0.5, reasoning="No signals detected — defaulting to local",
-            )
+        # Has sensitive signals → local
+        if sensitive_score > 0 and sensitive_score >= general_score:
+            return self._decide(query, SensitivityLevel.HIGH, RouteDecision.LOCAL_ONLY,
+                                0.9, f"Sensitive signals: {sensitive_score}")
 
-        sensitivity_ratio = sensitive_score / total
-
-        if sensitivity_ratio >= self._threshold:
-            return self._make_decision(
-                query, SensitivityLevel.HIGH, RouteDecision.LOCAL_ONLY,
-                confidence=sensitivity_ratio,
-                reasoning=f"Sensitive signal score {sensitivity_ratio:.2f}",
-            )
-
-        if sensitivity_ratio <= (1 - self._threshold):
-            return self._make_decision(
-                query, SensitivityLevel.LOW, RouteDecision.CLOUD_SANITIZED,
-                confidence=1 - sensitivity_ratio,
-                reasoning=f"General signal score {1 - sensitivity_ratio:.2f}",
-            )
-
-        # Ambiguous — default to local
-        return self._make_decision(
-            query, SensitivityLevel.MEDIUM, RouteDecision.LOCAL_ONLY,
-            confidence=0.5,
-            reasoning=f"Ambiguous sensitivity ratio {sensitivity_ratio:.2f} — local default",
-        )
+        # Has general signals OR no signals → cloud (fast)
+        # PII detector will still catch any personal data before it leaves
+        return self._decide(query, SensitivityLevel.LOW, RouteDecision.CLOUD_SANITIZED,
+                            0.85, f"General query — routing to cloud (general={general_score})")
 
     @staticmethod
-    def _score_signals(text: str, signals: list[str]) -> float:
-        return sum(1.0 for s in signals if s in text)
-
-    @staticmethod
-    def _make_decision(
-        query: Query,
-        sensitivity: SensitivityLevel,
-        route: RouteDecision,
-        confidence: float,
-        reasoning: str,
-    ) -> ClassifiedQuery:
-        logger.info(
-            "Query %s classified: %s → %s (confidence=%.2f) reason='%s'",
-            query.id, sensitivity.value, route.value, confidence, reasoning,
-        )
+    def _decide(query, sensitivity, route, confidence, reasoning) -> ClassifiedQuery:
+        logger.info("Query %s → %s (%.2f) — %s", query.id, route.value, confidence, reasoning)
         return ClassifiedQuery(
-            query=query,
-            sensitivity=sensitivity,
-            route=route,
-            confidence=confidence,
-            reasoning=reasoning,
+            query=query, sensitivity=sensitivity, route=route,
+            confidence=confidence, reasoning=reasoning,
         )

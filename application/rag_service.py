@@ -12,16 +12,17 @@ from domain.models import Document, LLMResponse, Query, RetrievedContext
 
 logger = logging.getLogger(__name__)
 
-RAG_PROMPT_TEMPLATE = """You are a secure document assistant.
-Answer the user's question using ONLY the context provided below.
-Do not use any external knowledge. If the answer is not in the context, say so clearly.
+RAG_PROMPT_TEMPLATE = """You are a METRIS industrial data analyst. Answer the question directly using ONLY the statistics in the context below.
+Give the exact number or fact — do NOT write code, do NOT explain how to calculate, do NOT say "we need to look at".
+If the answer is directly in the context, state it immediately in one sentence.
+If not found, say "This information is not available in the uploaded log."
 
 Context:
 {context}
 
 Question: {question}
 
-Answer:"""
+Answer (be direct and specific):"""
 
 
 class RAGService:

@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "mistral:7b-instruct-q4_K_M"
     ollama_timeout: int = 120
+    ollama_vision_model: str = "llava:7b"
 
     # ── Cloud provider (only for non-sensitive queries) ──
     cloud_provider: CloudProvider = CloudProvider.GROQ
@@ -43,7 +44,9 @@ class Settings(BaseSettings):
     groq_model: str = "llama3-70b-8192"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
-    max_cloud_tokens: int = 500       # hard cap on cloud response size
+    max_cloud_tokens: int = 500
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.0-flash"
 
     # ── RAG ──────────────────────────────────────────────
     chroma_persist_dir: str = "data/chroma"

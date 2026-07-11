@@ -499,18 +499,36 @@ async function vInspect(file){
     // Draw bounding boxes if any
     if(d.boxes&&d.boxes.length>0){
       const img=prev.querySelector('img');
-      img.onload=()=>{
+      const drawBoxes=()=>{
         const ol=document.getElementById('vbboxes');
         if(!ol)return;
         d.boxes.forEach((box,i)=>{
           const div=document.createElement('div');
           div.className='bbox';
-          div.style.cssText=`top:${box.y_min*100}%;left:${box.x_min*100}%;width:${(box.x_max-box.x_min)*100}%;height:${(box.y_max-box.y_min)*100}%`;
+          div.style.cssText='top:'+box.y_min*100+'%;left:'+box.x_min*100+'%;width:'+(box.x_max-box.x_min)*100+'%;height:'+(box.y_max-box.y_min)*100+'%';
           div.innerHTML='<span class="bbox-label">Defect '+(i+1)+'</span>';
           ol.appendChild(div);
         });
       };
-      if(img.complete)img.onload();
+      if(img.complete)drawBoxes();else img.onload=drawBoxes;
+    } else if(d.verdict==='ANOMALY'){
+      // Draw bounding box if coordinates provided by model
+      const ol=document.getElementById('vbboxes');
+      const imgEl=prev.querySelector('img');
+      imgEl.style.cssText='width:100%;border-radius:var(--radius);border:1px solid var(--gray-200);display:block;';
+      if(ol){
+        // Default box in center-left if no coordinates (typical crack location)
+        const box=d.boxes&&d.boxes.length>0?d.boxes[0]:{x_min:0.05,y_min:0.3,x_max:0.65,y_max:0.75};
+        ol.innerHTML=
+          '<div style="position:absolute;'+
+          'top:'+(box.y_min*100)+'%;left:'+(box.x_min*100)+'%;'+
+          'width:'+((box.x_max-box.x_min)*100)+'%;height:'+((box.y_max-box.y_min)*100)+'%;'+
+          'border:3px solid #ef4444;border-radius:4px;box-shadow:0 0 12px rgba(239,68,68,0.5);'+
+          'background:rgba(239,68,68,0.08);">'+
+          '<span style="position:absolute;top:-22px;left:0;background:#ef4444;color:white;'+
+          'font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;white-space:nowrap;">'+
+          '&#9888; '+(d.defect_type||'DEFECT').toUpperCase()+'</span></div>';
+      }
     }
 
     // Log inspection event

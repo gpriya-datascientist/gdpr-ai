@@ -1,14 +1,14 @@
-"""
-Layer: INTERFACES — Visual Inspection API Routes
+﻿"""
+Layer: INTERFACES â€” Visual Inspection API Routes
 Purpose: FastAPI routes for visual defect detection.
-         POST /api/v1/industrial/inspect — upload image, get GOOD/ANOMALY verdict + control suggestion.
+         POST /api/v1/industrial/inspect â€” upload image, get GOOD/ANOMALY verdict + control suggestion.
 """
 import logging
-import os
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
 from typing import Optional
 
+from config.settings import get_settings
 from industrial.vision.inspector import VisualInspectionEngine, InspectionResult
 
 logger = logging.getLogger(__name__)
@@ -16,10 +16,10 @@ vision_router = APIRouter()
 
 # Initialize engine from environment
 _engine = VisualInspectionEngine(
-    ollama_base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
-    ollama_vision_model=os.getenv("OLLAMA_VISION_MODEL", "llava:7b"),
-    gemini_api_key=os.getenv("GEMINI_API_KEY"),
-    gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+    ollama_base_url=get_settings().ollama_base_url,
+    ollama_vision_model=get_settings().ollama_vision_model,
+    gemini_api_key=(get_settings().gemini_api_key or None),
+    gemini_model=get_settings().gemini_model,
 )
 
 MAX_IMAGE_SIZE = 20 * 1024 * 1024  # 20MB
@@ -87,7 +87,7 @@ async def inspect_image(
 async def inspection_health():
     """Check which vision backends are available."""
     ollama_ok = False
-    gemini_ok = bool(os.getenv("GEMINI_API_KEY"))
+    gemini_ok = bool((get_settings().gemini_api_key or None))
 
     try:
         import httpx
@@ -114,7 +114,7 @@ async def get_sample_info():
     """Return info about available sample images for testing."""
     return {
         "dataset": "BSH Industrial Press Tool Dataset",
-        "description": "Metal press tool inspection images — cracks and surface deformations",
+        "description": "Metal press tool inspection images â€” cracks and surface deformations",
         "total_images": 24,
         "good_images": 12,
         "bad_images": 12,
@@ -122,3 +122,5 @@ async def get_sample_info():
         "defect_types": ["crack", "deformation", "surface_gap"],
         "usage": "Upload any image to POST /api/v1/industrial/inspect",
     }
+
+

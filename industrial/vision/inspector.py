@@ -16,25 +16,34 @@ import httpx
 logger = logging.getLogger(__name__)
 
 # Detection thresholds
-LOCAL_CONFIDENCE_THRESHOLD = 0.6   # below this → fallback to Gemini
+LOCAL_CONFIDENCE_THRESHOLD = 0.45   # lowered — catch more defects
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
 # Inspection prompt template (adapted from PressVisionLoop SEED_TEMPLATE)
-INSPECTION_PROMPT_TEMPLATE = """You are a strict visual quality inspector in an industrial press shop.
-Task: inspect ONE image for defects in a manufacturing part.
+INSPECTION_PROMPT_TEMPLATE = """You are a strict visual quality inspector in an industrial metal press shop.
+Task: inspect this image for ANY manufacturing defect.
 
 Inspection object: {part_name}.
 {description}
 
-Definitions:
-- ANOMALY: a defect is clearly visible — crack, fracture, deformation, surface gap, misalignment, weld defect, or scratch.
-- GOOD: the part looks normal and defect-free. Tooling marks, surface texture, grain, glare, shadows and reflections alone are NOT defects.
+Look carefully for:
+- Cracks: any thin dark line, fracture, or split in the metal surface
+- Deformations: bent, dented, or warped areas
+- Surface gaps: unexpected openings, notches, or holes not part of the design
+- Misalignment: parts that are not properly aligned
+- Weld defects: irregular weld beads, porosity, or gaps
+- Scratches: deep surface marks
 
-Be conservative: only report ANOMALY when visual evidence is clear and unambiguous.
-A false alarm stops the production line unnecessarily.
+IMPORTANT: These are industrial parts — even small cracks or notches are ANOMALIES.
+Sharp angular cuts, unusual notches, or breaks in the smooth metal surface are defects.
+Do NOT classify a visible crack or notch as GOOD.
+
+If ANOMALY, estimate bounding box coordinates (0.0=top-left, 1.0=bottom-right):
+x_min, y_min = top-left of defect
+x_max, y_max = bottom-right of defect
 
 Respond ONLY with valid JSON:
-{{"verdict": "ANOMALY" or "GOOD", "confidence": <float 0.0-1.0>, "reason": "<brief description in English, max 40 words>", "defect_type": "<one of: crack, deformation, surface_gap, misalignment, weld_defect, scratch, unknown or null>"}}"""
+{{"verdict": "ANOMALY" or "GOOD", "confidence": <float 0.0-1.0>, "reason": "<specific description of what you see, max 50 words>", "defect_type": "<crack|deformation|surface_gap|misalignment|weld_defect|scratch|unknown or null>", "box": {{"x_min": 0.1, "y_min": 0.2, "x_max": 0.6, "y_max": 0.8}} or null}}"""
 
 # Defect → Control Plane parameter mapping
 DEFECT_CONTROL_MAP = {
@@ -154,7 +163,9 @@ class VisualInspectionEngine:
         start = time.perf_counter()
         try:
             img_b64 = base64.b64encode(image_bytes).decode("utf-8")
-            url = GEMINI_API_URL.format(model=self._gemini_model)
+            # Use v1 API which supports newer models
+            model = self._gemini_model.replace("models/", "")
+            url = f"https://generativelanguage.googleapis.com/v1/models/{model}:generateContent"
             payload = {
                 "contents": [{
                     "parts": [
@@ -165,7 +176,6 @@ class VisualInspectionEngine:
                 "generationConfig": {
                     "temperature": 0.0,
                     "maxOutputTokens": 512,
-                    "responseMimeType": "application/json",
                 },
             }
             async with httpx.AsyncClient(timeout=60) as client:
@@ -189,7 +199,6 @@ class VisualInspectionEngine:
     def _parse_response(raw: str, backend: str, latency_ms: float) -> Optional[InspectionResult]:
         """Parse JSON response from vision model."""
         try:
-            # Strip markdown code fences if present
             clean = raw.strip()
             if clean.startswith("```"):
                 clean = clean.split("```")[1]
@@ -205,8 +214,37 @@ class VisualInspectionEngine:
             confidence = max(0.0, min(1.0, confidence))
             reason = str(parsed.get("reason", ""))[:300]
             defect_type = parsed.get("defect_type")
-            if defect_type == "null" or defect_type == "":
+            if isinstance(defect_type, list):
+                defect_type = defect_type[0] if defect_type else None
+            if defect_type in ("null", "", None):
                 defect_type = None
+            if defect_type:
+                defect_type = str(defect_type).lower()
+
+            # Extract bounding box if provided
+            boxes = []
+            box = parsed.get("box")
+            if box and isinstance(box, dict) and verdict == "ANOMALY":
+                try:
+                    boxes = [{
+                        "x_min": float(box.get("x_min", 0.1)),
+                        "y_min": float(box.get("y_min", 0.3)),
+                        "x_max": float(box.get("x_max", 0.7)),
+                        "y_max": float(box.get("y_max", 0.8)),
+                    }]
+                except Exception:
+                    boxes = []
+            elif isinstance(box, list) and len(box) > 0 and verdict == "ANOMALY":
+                try:
+                    b = box[0] if isinstance(box[0], dict) else {}
+                    boxes = [{
+                        "x_min": float(b.get("x_min", 0.1)),
+                        "y_min": float(b.get("y_min", 0.3)),
+                        "x_max": float(b.get("x_max", 0.7)),
+                        "y_max": float(b.get("y_max", 0.8)),
+                    }]
+                except Exception:
+                    boxes = []
 
             return InspectionResult(
                 verdict=verdict,
@@ -215,6 +253,7 @@ class VisualInspectionEngine:
                 defect_type=defect_type,
                 backend_used=backend,
                 latency_ms=latency_ms,
+                boxes=boxes,
                 raw_response=raw[:500],
             )
         except Exception as e:

@@ -114,6 +114,39 @@ header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px);background:#0f172a;color:white;border-radius:7px;padding:8px 15px;font-size:12px;font-weight:500;opacity:0;transition:all 0.2s;pointer-events:none;z-index:999;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.ok{background:#065f46;}.toast.err{background:#7f1d1d;}
+/* Vision Inspection styles */
+.vision-panel{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:28px 32px;gap:20px;flex:1;overflow-y:auto;}
+.vision-dropzone{width:100%;max-width:560px;border:2px dashed var(--gray-200);border-radius:var(--radius);padding:40px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--white);}
+.vision-dropzone:hover{border-color:var(--blue-400);background:var(--blue-50);}
+.vision-dropzone.drag{border-color:var(--blue-500);background:var(--blue-50);}
+.vision-dropzone-icon{font-size:40px;margin-bottom:10px;}
+.vision-dropzone h3{font-size:15px;font-weight:700;color:var(--blue-900);margin-bottom:5px;}
+.vision-dropzone p{font-size:12px;color:var(--gray-400);}
+.vision-preview{position:relative;width:100%;max-width:560px;}
+.vision-preview img{width:100%;border-radius:var(--radius);border:1px solid var(--gray-200);display:block;}
+.vision-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+.bbox{position:absolute;border:3px solid var(--red);border-radius:3px;background:rgba(239,68,68,0.08);}
+.bbox-label{position:absolute;top:-22px;left:0;background:var(--red);color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;}
+.verdict-card{width:100%;max-width:560px;border-radius:var(--radius);padding:18px 20px;border:1px solid;}
+.verdict-card.good{background:var(--green-light);border-color:#a7f3d0;}
+.verdict-card.anomaly{background:var(--red-light);border-color:#fecaca;}
+.verdict-card.checking{background:var(--blue-50);border-color:var(--blue-100);}
+.verdict-title{font-size:18px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.verdict-title.good{color:#065f46;}
+.verdict-title.anomaly{color:#991b1b;}
+.verdict-meta{font-size:12px;color:var(--gray-500);margin-bottom:10px;}
+.verdict-reason{font-size:13px;line-height:1.6;}
+.control-suggest{margin-top:14px;padding:12px 14px;background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--gray-200);}
+.control-suggest-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--blue-600);margin-bottom:8px;}
+.control-suggest-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;margin-bottom:6px;}
+.apply-fix-btn{background:var(--blue-600);color:white;border:none;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;width:100%;transition:background 0.15s;}
+.apply-fix-btn:hover{background:var(--blue-700);}
+.reinspect-btn{background:var(--green-light);color:#065f46;border:1px solid #a7f3d0;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;margin-top:6px;width:100%;}
+.conf-bar{height:6px;background:var(--gray-100);border-radius:3px;margin-top:6px;overflow:hidden;}
+.conf-fill{height:100%;border-radius:3px;transition:width 0.4s;}
+.conf-fill.good{background:var(--green);}
+.conf-fill.anomaly{background:var(--red);}
+#vision-file{display:none;}
 </style>
 </head>
 <body>
@@ -126,6 +159,7 @@ header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0
     <button class="mode-tab active" onclick="switchMode('gdpr')" id="tab-gdpr">&#128274; GDPR Assistant</button>
     <button class="mode-tab" onclick="switchMode('industrial')" id="tab-industrial">&#127981; Industrial / METRIS</button>
     <button class="mode-tab" onclick="switchMode('control')" id="tab-control">&#9881;&#65039; Control Plane</button>
+    <button class="mode-tab" onclick="switchMode('vision')" id="tab-vision">&#128247; Visual Inspection</button>
   </div>
   <div class="header-right">
     <div class="health-pill"><div class="health-dot" id="hd"></div><span id="hl">checking...</span></div>
@@ -368,7 +402,138 @@ function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendQu
 function sb(){const m=document.getElementById('messages');m.scrollTop=m.scrollHeight;}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
 let tt;function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show'+(type?' '+type:'');clearTimeout(tt);tt=setTimeout(()=>el.className='toast',3000);}
-function exportPDF(){if(log.length===0){toast('No session data to export','err');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});const W=210,M=14,lw=W-M*2;let y=0;function hl(yy){doc.setDrawColor(180,180,180);doc.setLineWidth(0.3);doc.line(M,yy,W-M,yy);}function bx(x,yy,w,h){doc.setDrawColor(180,180,180);doc.setLineWidth(0.3);doc.rect(x,yy,w,h,'S');}doc.setFillColor(30,79,163);doc.rect(M,y+4,lw,8,'F');doc.rect(M,y+4,lw,20,'S');doc.setTextColor(255,255,255);doc.setFontSize(12);doc.setFont('helvetica','bold');doc.text('VAULTMIND -- CONTROL PLANE SESSION LOG',W/2,y+10,{align:'center'});doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Session: '+sid.slice(0,8).toUpperCase()+'  |  Date: '+new Date().toLocaleDateString()+'  |  Mode: '+mode.toUpperCase(),W/2,y+18,{align:'center'});doc.setTextColor(55,65,81);y+=28;const avgLat=stats.lat.length?(stats.lat.reduce((a,b)=>a+b,0)/stats.lat.length/1000).toFixed(1)+'s':'--';doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(100,100,100);doc.text('Events: '+log.length+'  |  PII Masked: '+stats.pii+'  |  Cloud: '+stats.cloud+'  |  Local: '+stats.local+'  |  Avg Latency: '+avgLat+'  |  GDPR: YES',M,y);y+=8;const ctrlEvt=log.filter(e=>e.isControl);if(ctrlEvt.length>0){doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('BASELINE PARAMETERS (Session Start)',M,y);y+=4;const bC=[80,30];const bW=bC[0]+bC[1];doc.setFillColor(235,245,255);doc.rect(M,y,bW,7,'F');bx(M,y,bW,7);doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('Parameter',M+2,y+4.5);doc.text('Value',M+bC[0]+2,y+4.5);y+=7;const bR=[['Left Door Stroke Rate','45.0'],['Right Door Stroke Rate','44.0'],['Hood Stroke Rate','30.0'],['Assembly Speed','2.8 m/s'],['Cycle Time','240s'],['Torque','150 Nm'],['Weld Quality','0.95']];doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);bR.forEach((row,ri)=>{if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);doc.rect(M,y,bW,6,'F');bx(M,y,bW,6);doc.setFontSize(7.5);doc.text(row[0],M+2,y+4);doc.text(row[1],M+bC[0]+2,y+4);y+=6;});y+=6;}doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('PARAMETER CHANGES LOG',M,y);y+=4;const cC=[20,44,16,16,16,14,56];const cW=cC.reduce((a,b)=>a+b,0);const cH=['Time','Parameter','Before','After','Change','Risk','AI Suggestion'];doc.setFillColor(30,79,163);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);let hx=M+2;cH.forEach((h,i)=>{doc.text(h,hx,y+4.5);hx+=cC[i];});y+=7;if(ctrlEvt.length===0){doc.setFillColor(252,252,252);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.setFontSize(8);doc.text('No parameter changes recorded.',M+2,y+4.5);y+=7;}else{let ri=0;ctrlEvt.forEach(entry=>{let p={};try{p=JSON.parse(entry.text);}catch{}(p.params||[]).forEach((param,pi)=>{if(y>265){doc.addPage();y=15;}if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);let cx=M+2;doc.text(pi===0?(entry.time||''):'',cx,y+4.5);cx+=cC[0];doc.text(String(param.name||'').slice(0,26),cx,y+4.5);cx+=cC[1];doc.text(String(param.before||''),cx,y+4.5);cx+=cC[2];doc.text(String(param.after||''),cx,y+4.5);cx+=cC[3];const chg=String(param.change||'');doc.setTextColor(...(chg.startsWith('-')?[200,40,40]:[16,140,70]));doc.setFont('helvetica','bold');doc.text(chg,cx,y+4.5);cx+=cC[4];const rk=(p.risk||'low').toUpperCase();doc.setTextColor(...(rk==='HIGH'?[200,40,40]:rk==='MEDIUM'?[190,110,0]:[16,140,70]));doc.text(rk,cx,y+4.5);cx+=cC[5];doc.setTextColor(55,65,81);doc.setFont('helvetica','normal');doc.text((p.impact||'').slice(0,52),cx,y+4.5);y+=7;ri++;});});}y+=6;if(y>210){doc.addPage();y=15;}doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('FINAL STATE vs BASELINE',M,y);y+=4;const fC=[58,24,24,18,18];const fW=fC.reduce((a,b)=>a+b,0);const fH=['Parameter','Baseline','Final','Change','Status'];doc.setFillColor(30,79,163);doc.rect(M,y,fW,7,'F');bx(M,y,fW,7);doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);let fx=M+2;fH.forEach((h,i)=>{doc.text(h,fx,y+4.5);fx+=fC[i];});y+=7;Object.entries(MS).forEach(([k,v],ri)=>{const bv=BL[k]||v;const cp=bv!==0?Math.round((v-bv)/bv*100):0;const ch=cp!==0;if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);doc.rect(M,y,fW,6,'F');bx(M,y,fW,6);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);doc.setFontSize(7);let fx=M+2;doc.text(k.replace(/_/g,' '),fx,y+4);fx+=fC[0];doc.text(String(bv),fx,y+4);fx+=fC[1];doc.setTextColor(ch?[16,140,70]:[55,65,81]);doc.text(String(v),fx,y+4);fx+=fC[2];doc.setTextColor(cp<0?[200,40,40]:cp>0?[16,140,70]:[150,150,150]);doc.text((cp>=0?'+':'')+cp+'%',fx,y+4);fx+=fC[3];doc.setTextColor(ch?[16,140,70]:[150,150,150]);doc.setFont('helvetica','bold');doc.text(ch?'MODIFIED':'--',fx,y+4);doc.setTextColor(55,65,81);y+=6;});y+=8;if(y>245){doc.addPage();y=15;}doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('OVERALL IMPACT SUMMARY',M,y);y+=4;bx(M,y,lw,28);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);const sa=(((MS.assembly_speed_ms-2.8)/2.8)*100).toFixed(0);const sg=((4.2-MS.assembly_speed_ms)/4.2*100).toFixed(0);const hasH=ctrlEvt.some(e=>{try{return JSON.parse(e.text).risk==='high';}catch{return false;}});const hasM=ctrlEvt.some(e=>{try{return JSON.parse(e.text).risk==='medium';}catch{return false;}});const rl=hasH?'HIGH':hasM?'MEDIUM':'LOW';doc.text('Speed improvement vs 50% target:  +'+sa+'% achieved, '+sg+'% remaining',M+4,y+7);doc.text('Estimated parts/hour improvement:  ~'+Math.round(20*(1+Number(sa)/100))+' (was 20)',M+4,y+13);doc.text('Total risk level:                  '+rl,M+4,y+19);doc.text('GDPR Compliant:                    YES',M+4,y+25);const pc=doc.getNumberOfPages();for(let i=1;i<=pc;i++){doc.setPage(i);hl(284);doc.setFontSize(7);doc.setTextColor(150,150,150);doc.setFont('helvetica','normal');doc.text('VaultMind -- GDPR-compliant Industrial AI Platform',M,289);doc.text('Page '+i+' of '+pc+' | '+new Date().toLocaleString(),W-M,289,{align:'right'});}doc.save('VaultMind-Log-'+sid.slice(0,8)+'-'+new Date().toISOString().slice(0,10)+'.pdf');toast('Log exported as PDF','ok');}
+
+// ── VISION INSPECTION ─────────────────────────────────────────────────────
+let vLastSuggestion=null;
+
+function switchMode(m){mode=m;const c=MODES[m]||MODES.gdpr;document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));const tab=document.getElementById('tab-'+m);if(tab)tab.classList.add('active');
+// Show/hide chat area vs vision panel
+const chatArea=document.querySelector('.chat-area');
+const vPanel=document.getElementById('vision-panel');
+if(m==='vision'){if(chatArea)chatArea.style.display='none';if(vPanel)vPanel.style.display='flex';}else{if(chatArea)chatArea.style.display='flex';if(vPanel)vPanel.style.display='none';}
+if(m!=='vision'){const b=document.getElementById('mb');if(b){b.className='mode-badge '+c.bc;b.textContent=c.label;}document.getElementById('mh').textContent=c.hint;document.getElementById('mdt').textContent=c.dt;document.getElementById('mdx').textContent=c.dx;document.getElementById('qp').innerHTML=c.prompts.map(p=>'<button class="qp-btn" onclick="fp(this)">'+p+'</button>').join('');document.getElementById('wi').innerHTML=c.wi;document.getElementById('wt').textContent=c.wt;document.getElementById('wd').textContent=c.wd;document.getElementById('cr').innerHTML=c.prompts.slice(0,4).map(p=>'<button class="chip" onclick="fc(this)">'+p+'</button>').join('');document.getElementById('query').placeholder=c.ph;}}function exportPDF(){if(log.length===0){toast('No session data to export','err');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});const W=210,M=14,lw=W-M*2;let y=0;function hl(yy){doc.setDrawColor(180,180,180);doc.setLineWidth(0.3);doc.line(M,yy,W-M,yy);}function bx(x,yy,w,h){doc.setDrawColor(180,180,180);doc.setLineWidth(0.3);doc.rect(x,yy,w,h,'S');}doc.setFillColor(30,79,163);doc.rect(M,y+4,lw,8,'F');doc.rect(M,y+4,lw,20,'S');doc.setTextColor(255,255,255);doc.setFontSize(12);doc.setFont('helvetica','bold');doc.text('VAULTMIND -- CONTROL PLANE SESSION LOG',W/2,y+10,{align:'center'});doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Session: '+sid.slice(0,8).toUpperCase()+'  |  Date: '+new Date().toLocaleDateString()+'  |  Mode: '+mode.toUpperCase(),W/2,y+18,{align:'center'});doc.setTextColor(55,65,81);y+=28;const avgLat=stats.lat.length?(stats.lat.reduce((a,b)=>a+b,0)/stats.lat.length/1000).toFixed(1)+'s':'--';doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(100,100,100);doc.text('Events: '+log.length+'  |  PII Masked: '+stats.pii+'  |  Cloud: '+stats.cloud+'  |  Local: '+stats.local+'  |  Avg Latency: '+avgLat+'  |  GDPR: YES',M,y);y+=8;const ctrlEvt=log.filter(e=>e.isControl);if(ctrlEvt.length>0){doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('BASELINE PARAMETERS (Session Start)',M,y);y+=4;const bC=[80,30];const bW=bC[0]+bC[1];doc.setFillColor(235,245,255);doc.rect(M,y,bW,7,'F');bx(M,y,bW,7);doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('Parameter',M+2,y+4.5);doc.text('Value',M+bC[0]+2,y+4.5);y+=7;const bR=[['Left Door Stroke Rate','45.0'],['Right Door Stroke Rate','44.0'],['Hood Stroke Rate','30.0'],['Assembly Speed','2.8 m/s'],['Cycle Time','240s'],['Torque','150 Nm'],['Weld Quality','0.95']];doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);bR.forEach((row,ri)=>{if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);doc.rect(M,y,bW,6,'F');bx(M,y,bW,6);doc.setFontSize(7.5);doc.text(row[0],M+2,y+4);doc.text(row[1],M+bC[0]+2,y+4);y+=6;});y+=6;}doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('PARAMETER CHANGES LOG',M,y);y+=4;const cC=[20,44,16,16,16,14,56];const cW=cC.reduce((a,b)=>a+b,0);const cH=['Time','Parameter','Before','After','Change','Risk','AI Suggestion'];doc.setFillColor(30,79,163);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);let hx=M+2;cH.forEach((h,i)=>{doc.text(h,hx,y+4.5);hx+=cC[i];});y+=7;if(ctrlEvt.length===0){doc.setFillColor(252,252,252);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.setFontSize(8);doc.text('No parameter changes recorded.',M+2,y+4.5);y+=7;}else{let ri=0;ctrlEvt.forEach(entry=>{let p={};try{p=JSON.parse(entry.text);}catch{}(p.params||[]).forEach((param,pi)=>{if(y>265){doc.addPage();y=15;}if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);doc.rect(M,y,cW,7,'F');bx(M,y,cW,7);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);let cx=M+2;doc.text(pi===0?(entry.time||''):'',cx,y+4.5);cx+=cC[0];doc.text(String(param.name||'').slice(0,26),cx,y+4.5);cx+=cC[1];doc.text(String(param.before||''),cx,y+4.5);cx+=cC[2];doc.text(String(param.after||''),cx,y+4.5);cx+=cC[3];const chg=String(param.change||'');doc.setTextColor(...(chg.startsWith('-')?[200,40,40]:[16,140,70]));doc.setFont('helvetica','bold');doc.text(chg,cx,y+4.5);cx+=cC[4];const rk=(p.risk||'low').toUpperCase();doc.setTextColor(...(rk==='HIGH'?[200,40,40]:rk==='MEDIUM'?[190,110,0]:[16,140,70]));doc.text(rk,cx,y+4.5);cx+=cC[5];doc.setTextColor(55,65,81);doc.setFont('helvetica','normal');doc.text((p.impact||'').slice(0,52),cx,y+4.5);y+=7;ri++;});});}y+=6;if(y>210){doc.addPage();y=15;}doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('FINAL STATE vs BASELINE',M,y);y+=4;const fC=[58,24,24,18,18];const fW=fC.reduce((a,b)=>a+b,0);const fH=['Parameter','Baseline','Final','Change','Status'];doc.setFillColor(30,79,163);doc.rect(M,y,fW,7,'F');bx(M,y,fW,7);doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);let fx=M+2;fH.forEach((h,i)=>{doc.text(h,fx,y+4.5);fx+=fC[i];});y+=7;Object.entries(MS).forEach(([k,v],ri)=>{const bv=BL[k]||v;const cp=bv!==0?Math.round((v-bv)/bv*100):0;const ch=cp!==0;if(ri%2===0)doc.setFillColor(250,250,250);else doc.setFillColor(255,255,255);doc.rect(M,y,fW,6,'F');bx(M,y,fW,6);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);doc.setFontSize(7);let fx=M+2;doc.text(k.replace(/_/g,' '),fx,y+4);fx+=fC[0];doc.text(String(bv),fx,y+4);fx+=fC[1];doc.setTextColor(ch?[16,140,70]:[55,65,81]);doc.text(String(v),fx,y+4);fx+=fC[2];doc.setTextColor(cp<0?[200,40,40]:cp>0?[16,140,70]:[150,150,150]);doc.text((cp>=0?'+':'')+cp+'%',fx,y+4);fx+=fC[3];doc.setTextColor(ch?[16,140,70]:[150,150,150]);doc.setFont('helvetica','bold');doc.text(ch?'MODIFIED':'--',fx,y+4);doc.setTextColor(55,65,81);y+=6;});y+=8;if(y>245){doc.addPage();y=15;}doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(30,79,163);doc.text('OVERALL IMPACT SUMMARY',M,y);y+=4;bx(M,y,lw,28);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(55,65,81);const sa=(((MS.assembly_speed_ms-2.8)/2.8)*100).toFixed(0);const sg=((4.2-MS.assembly_speed_ms)/4.2*100).toFixed(0);const hasH=ctrlEvt.some(e=>{try{return JSON.parse(e.text).risk==='high';}catch{return false;}});const hasM=ctrlEvt.some(e=>{try{return JSON.parse(e.text).risk==='medium';}catch{return false;}});const rl=hasH?'HIGH':hasM?'MEDIUM':'LOW';doc.text('Speed improvement vs 50% target:  +'+sa+'% achieved, '+sg+'% remaining',M+4,y+7);doc.text('Estimated parts/hour improvement:  ~'+Math.round(20*(1+Number(sa)/100))+' (was 20)',M+4,y+13);doc.text('Total risk level:                  '+rl,M+4,y+19);doc.text('GDPR Compliant:                    YES',M+4,y+25);const pc=doc.getNumberOfPages();for(let i=1;i<=pc;i++){doc.setPage(i);hl(284);doc.setFontSize(7);doc.setTextColor(150,150,150);doc.setFont('helvetica','normal');doc.text('VaultMind -- GDPR-compliant Industrial AI Platform',M,289);doc.text('Page '+i+' of '+pc+' | '+new Date().toLocaleString(),W-M,289,{align:'right'});}doc.save('VaultMind-Log-'+sid.slice(0,8)+'-'+new Date().toISOString().slice(0,10)+'.pdf');toast('Log exported as PDF','ok');}
+
+// Vision panel HTML injection
+document.addEventListener('DOMContentLoaded',()=>{
+  const vp=document.querySelector('.main');
+  if(vp){
+    const vpanel=document.createElement('div');
+    vpanel.id='vision-panel';
+    vpanel.style.cssText='display:none;flex:1;flex-direction:column;overflow:hidden;background:var(--gray-50);';
+    vpanel.innerHTML=`
+      <div class="mode-banner">
+        <div class="mode-badge control">&#128247; VISUAL INSPECTION</div>
+        <span class="mode-hint">Upload a part photo -- AI detects defects and suggests Control Plane fixes</span>
+      </div>
+      <div class="vision-panel">
+        <div class="vision-dropzone" id="vdz" onclick="document.getElementById('vf').click()" ondragover="vDragOver(event)" ondrop="vDrop(event)" ondragleave="vDragLeave(event)">
+          <div class="vision-dropzone-icon">&#128247;</div>
+          <h3>Upload Part Photo</h3>
+          <p>Click or drag &amp; drop an image<br>Supports JPG, PNG, WEBP -- max 20MB</p>
+        </div>
+        <input type="file" id="vf" accept="image/*" onchange="vFileSelected(this)" style="display:none">
+        <div id="vision-result" style="display:none;width:100%;max-width:560px;flex-direction:column;gap:16px;"></div>
+      </div>`;
+    vp.appendChild(vpanel);
+  }
+});
+
+function vDragOver(e){e.preventDefault();document.getElementById('vdz').classList.add('drag');}
+function vDragLeave(e){document.getElementById('vdz').classList.remove('drag');}
+function vDrop(e){e.preventDefault();document.getElementById('vdz').classList.remove('drag');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))vInspect(f);}
+function vFileSelected(input){const f=input.files[0];if(f)vInspect(f);input.value='';}
+
+async function vInspect(file){
+  const vr=document.getElementById('vision-result');
+  vr.style.display='flex';
+  vr.innerHTML='';
+
+  // Show image preview
+  const imgUrl=URL.createObjectURL(file);
+  const prev=document.createElement('div');
+  prev.className='vision-preview';
+  prev.innerHTML='<img src="'+imgUrl+'" alt="Part photo"><div class="vision-overlay" id="vbboxes"></div>';
+  vr.appendChild(prev);
+
+  // Show checking state
+  const card=document.createElement('div');
+  card.className='verdict-card checking';
+  card.innerHTML='<div class="verdict-title" style="color:var(--blue-600)"><div class="dot-pulse"><span></span><span></span><span></span></div> Inspecting...</div><div class="verdict-meta">Trying local vision model first, fallback to Gemini if needed</div>';
+  vr.appendChild(card);
+
+  try{
+    const form=new FormData();
+    form.append('file',file);
+    form.append('part_name','BMW Manufacturing Part');
+    form.append('description','Check for cracks, deformations, surface gaps, misalignment, weld defects or scratches.');
+    const r=await fetch(API+'/api/v1/industrial/inspect',{method:'POST',body:form});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.detail||'HTTP '+r.status);}
+    const d=await r.json();
+
+    // Update verdict card
+    const isAnomaly=d.verdict==='ANOMALY';
+    const confPct=Math.round((d.confidence||0)*100);
+    card.className='verdict-card '+(isAnomaly?'anomaly':'good');
+    let suggHtml='';
+    if(isAnomaly&&d.control_suggestion){
+      vLastSuggestion=d.control_suggestion;
+      const s=d.control_suggestion;
+      suggHtml=`<div class="control-suggest">
+        <div class="control-suggest-title">&#9881; Suggested Control Plane Fix</div>
+        <div class="control-suggest-row"><span style="color:var(--gray-500)">Defect type</span><strong>${s.defect_type||'unknown'}</strong></div>
+        <div class="control-suggest-row"><span style="color:var(--gray-500)">Parameter</span><span>${s.param_label}</span></div>
+        <div class="control-suggest-row"><span style="color:var(--gray-500)">Change</span><span style="color:${s.action==='reduce'?'var(--red)':'var(--green)'};font-weight:700">${s.change} (${s.current_value} &#8594; ${s.suggested_value})</span></div>
+        <div class="control-suggest-row"><span style="color:var(--gray-500)">Risk</span><span class="risk-badge risk-${s.risk}" style="margin:0">${s.risk.toUpperCase()}</span></div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:6px">${s.reason}</div>
+        <button class="apply-fix-btn" onclick="vApplyFix()">&#9881; Apply Fix in Control Plane</button>
+        <button class="reinspect-btn" onclick="document.getElementById('vf').click()">&#128247; Re-inspect After Fix</button>
+      </div>`;
+    }
+    card.innerHTML=`
+      <div class="verdict-title ${isAnomaly?'anomaly':'good'}">${isAnomaly?'&#9888; ANOMALY DETECTED':'&#10003; GOOD'}</div>
+      <div class="verdict-meta">Confidence: ${confPct}% &nbsp;|&nbsp; Backend: ${d.backend_used} &nbsp;|&nbsp; ${(d.latency_ms/1000).toFixed(1)}s</div>
+      <div class="conf-bar"><div class="conf-fill ${isAnomaly?'anomaly':'good'}" style="width:${confPct}%"></div></div>
+      <div class="verdict-reason" style="margin-top:10px">${d.reason||''}</div>
+      ${suggHtml}`;
+
+    // Draw bounding boxes if any
+    if(d.boxes&&d.boxes.length>0){
+      const img=prev.querySelector('img');
+      img.onload=()=>{
+        const ol=document.getElementById('vbboxes');
+        if(!ol)return;
+        d.boxes.forEach((box,i)=>{
+          const div=document.createElement('div');
+          div.className='bbox';
+          div.style.cssText=`top:${box.y_min*100}%;left:${box.x_min*100}%;width:${(box.x_max-box.x_min)*100}%;height:${(box.y_max-box.y_min)*100}%`;
+          div.innerHTML='<span class="bbox-label">Defect '+(i+1)+'</span>';
+          ol.appendChild(div);
+        });
+      };
+      if(img.complete)img.onload();
+    }
+
+    // Log inspection event
+    log.push({role:'vision',verdict:d.verdict,confidence:d.confidence,reason:d.reason,defect_type:d.defect_type,backend:d.backend_used,time:new Date().toLocaleTimeString(),suggestion:d.control_suggestion});
+    toast(isAnomaly?'Defect detected: '+d.defect_type:'Part inspection: GOOD','ok');
+
+  }catch(e){
+    card.className='verdict-card';
+    card.style.cssText='background:var(--red-light);border:1px solid #fecaca;border-radius:var(--radius);padding:18px 20px;';
+    card.innerHTML='<div style="color:var(--red);font-weight:700">Inspection failed</div><div style="font-size:12px;margin-top:6px">'+e.message+'</div>';
+    toast('Inspection failed: '+e.message,'err');
+  }
+}
+
+function vApplyFix(){
+  if(!vLastSuggestion)return;
+  const s=vLastSuggestion;
+  const cmd=(s.action==='reduce'?'Reduce ':'Increase ')+s.param_label+' by '+s.pct+'%';
+  switchMode('control');
+  document.getElementById('query').value=cmd;
+  autoResize(document.getElementById('query'));
+  toast('Fix pre-loaded in Control Plane -- press Enter to apply');
+}
 </script>
 </body>
 </html>

@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config.settings import get_settings
 from interfaces.api.routes import router
 from interfaces.api.industrial_routes import industrial_router
+from interfaces.api.vision_routes import vision_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -46,6 +47,7 @@ def create_app() -> FastAPI:
     )
     app.include_router(router, prefix="/api/v1")
     app.include_router(industrial_router, prefix="/api/v1/industrial")
+    app.include_router(vision_router, prefix="/api/v1/industrial")
     return app
 
 

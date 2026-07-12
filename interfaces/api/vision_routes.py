@@ -30,6 +30,7 @@ class InspectResponse(BaseModel):
     confidence: float
     reason: str
     defect_type: Optional[str]
+    affected_part: Optional[str]
     backend_used: str
     latency_ms: float
     control_suggestion: Optional[dict]
@@ -72,11 +73,15 @@ async def inspect_image(
         logger.error("Inspection failed: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=f"Inspection failed: {str(e)}")
 
+    if result is None:
+        raise HTTPException(status_code=500, detail="Vision model returned no result. Check Ollama is running with llava:7b loaded.")
+
     return InspectResponse(
         verdict=result.verdict,
         confidence=result.confidence,
         reason=result.reason,
         defect_type=result.defect_type,
+        affected_part=result.affected_part,
         backend_used=result.backend_used,
         latency_ms=round(result.latency_ms, 1),
         control_suggestion=result.control_suggestion,

@@ -215,7 +215,7 @@ header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0
 </div>
 <div class="toast" id="toast"></div>
 <script>
-const API='http://127.0.0.1:8002';
+const API='http://127.0.0.1:8003';
 let mode='gdpr',sid=crypto.randomUUID();
 let stats={msgs:0,pii:0,cloud:0,local:0,lat:[]};
 let docs=[],log=[];
@@ -546,11 +546,11 @@ async function vInspect(file){
 function vApplyFix(){
   if(!vLastSuggestion)return;
   const s=vLastSuggestion;
-  const cmd=(s.action==='reduce'?'Reduce ':'Increase ')+s.param_label+' by '+s.pct+'%';
+  const cmd=s.command||(( s.action==='reduce'?'Reduce ':'Increase ')+s.param_label+' by '+s.pct+'%');
   switchMode('control');
   document.getElementById('query').value=cmd;
   autoResize(document.getElementById('query'));
-  toast('Fix pre-loaded in Control Plane -- press Enter to apply');
+  toast('Fix pre-loaded in Control Plane — press Enter to apply');
 }
 </script>
 </body>

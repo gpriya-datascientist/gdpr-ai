@@ -1,30 +1,33 @@
-import httpx, base64, sys, asyncio
+import asyncio, sys, base64
 sys.path.insert(0,'.')
+from industrial.vision.inspector import VisualInspectionEngine
 from config.settings import get_settings
 s = get_settings()
-key = s.gemini_api_key
-print("Key prefix:", key[:15])
 
+engine = VisualInspectionEngine(
+    ollama_base_url=s.ollama_base_url,
+    ollama_vision_model=s.ollama_vision_model,
+    gemini_api_key=s.gemini_api_key or None,
+    gemini_model=s.gemini_model,
+)
+
+# Test with bad image
 with open('data/industrial/seed_images/bad/2022_2_1_12_23_10_670.jpg','rb') as f:
     img = f.read()
-img_b64 = base64.b64encode(img).decode()
 
-prompt = 'Inspect this industrial part image for manufacturing defects. Reply ONLY with valid JSON like this: {"verdict": "ANOMALY", "confidence": 0.9, "reason": "crack visible on surface", "defect_type": "crack"}'
+async def test():
+    # Get raw response from llava directly
+    import httpx
+    img_b64 = base64.b64encode(img).decode()
+    prompt = "Is there a defect in this image? Reply ONLY with JSON: {\"verdict\": \"GOOD\" or \"ANOMALY\", \"confidence\": 0.9, \"reason\": \"brief reason\", \"defect_type\": \"crack\" or null, \"affected_part\": \"unknown\", \"box\": null}"
+    payload = {"model": s.ollama_vision_model, "prompt": prompt, "images": [img_b64], "stream": False, "options": {"temperature": 0.0}}
+    async with httpx.AsyncClient(timeout=120) as client:
+        resp = await client.post(f"{s.ollama_base_url}/api/generate", json=payload)
+        data = resp.json()
+        raw = data.get("response","")
+        print("RAW RESPONSE:")
+        print(repr(raw[:500]))
+        print("\nFIRST 200 chars:")
+        print(raw[:200])
 
-payload = {
-    "contents": [{"parts": [
-        {"text": prompt},
-        {"inline_data": {"mime_type": "image/jpeg", "data": img_b64}}
-    ]}],
-    "generationConfig": {"temperature": 0.0, "maxOutputTokens": 300}
-}
-
-url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent"
-r = httpx.post(url, json=payload, params={"key": key}, timeout=30)
-print("Status:", r.status_code)
-if r.status_code == 200:
-    data = r.json()
-    text = data["candidates"][0]["content"]["parts"][0]["text"]
-    print("Response:", text[:400])
-else:
-    print("Error:", r.text[:300])
+asyncio.run(test())

@@ -48,7 +48,8 @@ class ControlApplyRequest(BaseModel):
 async def inspect_image(
     file: UploadFile = File(...),
     part_name: str = "BMW Manufacturing Part",
-    description: str = "Check for cracks, deformations, surface gaps, misalignment, weld defects or scratches.",
+    description: str = "Check for cracks and deformations in the metal surface.",
+    force_gemini: str = "false",
 ):
     """
     Inspect an uploaded image for manufacturing defects.
@@ -68,6 +69,7 @@ async def inspect_image(
             part_name=part_name,
             description=description,
             mime=mime,
+            force_gemini=(force_gemini.lower() == "true"),
         )
     except Exception as e:
         logger.error("Inspection failed: %s", e, exc_info=True)

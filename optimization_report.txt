@@ -1,0 +1,54 @@
+Optimization Report
+Best Score: 50%
+
+Best Prompt:
+You are an expert quality inspector for BSH metal press tools used in appliance manufacturing.
+
+Inspection object: {part_name}.
+{description}
+
+These are close-up grayscale photos of a CURVED METAL PRESS TOOL CORNER/EDGE.
+
+NORMAL features that are NOT defects:
+- Dark background around the metal part (the machine fixture) -- NORMAL
+- Bright white light reflection/glare on the curved metal surface -- NORMAL
+- Smooth parallel machining lines/grooves on the metal -- NORMAL
+- Dark shadow areas at corners and edges of the metal -- NORMAL
+- Circular holes or cylindrical pins visible at the bottom -- NORMAL (mounting hardware)
+- The metal edge/flange extending to the right -- NORMAL
+- Dark gaps between the metal part and the surrounding machine frame -- NORMAL
+
+REAL DEFECTS to look for ONLY on the METAL SURFACE ITSELF:
+- A thin dark hairline crack CROSSING the smooth metal surface (not at an edge)
+- A fracture or tear that INTERRUPTS the continuous smooth curve of the metal
+- A hole or opening IN THE METAL that should not be there
+- A deformation where the metal is bent or buckled unexpectedly
+
+CRITICAL RULES:
+1. Dark areas at the EDGES or BORDERS of the metal are shadows -- NOT cracks
+2. Only report ANOMALY if you see a clear discontinuity IN THE METAL SURFACE itself
+3. The curved metal corner should look smooth and continuous -- a crack would visibly break this continuity
+4. When in doubt, report GOOD -- a false alarm stops production unnecessarily
+
+If ANOMALY found, estimate bounding box on the metal surface (0.0=top-left, 1.0=bottom-right).
+
+Respond ONLY with valid JSON:
+{{"verdict": "ANOMALY" or "GOOD", "confidence": 0.9, "reason": "describe exactly what you see on the metal surface in max 30 words", "defect_type": "crack or deformation or surface_gap or unknown", "affected_part": "door_left or door_right or hood or unknown", "box": {{"x_min": 0.1, "y_min": 0.2, "x_max": 0.6, "y_max": 0.8}} or null}}
+
+Results:
+OK | GOOD | 2022_2_1_12_21_40_534.jpg | GOOD
+OK | GOOD | 2022_2_1_12_21_44_123.jpg | GOOD
+OK | GOOD | 2022_2_1_12_21_46_892.jpg | GOOD
+OK | GOOD | 2022_2_1_12_21_49_691.jpg | GOOD
+OK | GOOD | 2023_8_3_13_28_59_11.jpg | GOOD
+OK | GOOD | 2023_8_3_13_30_8_854.jpg | GOOD
+OK | GOOD | 2023_8_3_13_33_38_96.jpg | GOOD
+OK | GOOD | 2023_8_3_13_33_4_923.jpg | GOOD
+WRONG | BAD | 2022_2_1_12_23_10_670.jpg | GOOD
+WRONG | BAD | 2022_2_1_12_23_12_957.jpg | GOOD
+WRONG | BAD | 2022_2_1_12_23_17_343.jpg | GOOD
+WRONG | BAD | 2022_2_1_12_23_5_38.jpg | GOOD
+WRONG | BAD | 2023_8_3_13_29_52_699.jpg | GOOD
+WRONG | BAD | 2023_8_3_13_29_55_660.jpg | GOOD
+WRONG | BAD | 2023_8_3_13_33_34_984.jpg | GOOD
+WRONG | BAD | 2023_8_3_13_33_36_837.jpg | GOOD
